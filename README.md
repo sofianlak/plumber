@@ -121,7 +121,6 @@ Plumber will output a compliance report showing any issues found.
 - [Installation](#-installation)
 - [CLI Reference](#-cli-reference)
 - [Self-Hosted GitLab](#%EF%B8%8F-self-hosted-gitlab)
-- [Example Output](#-example-output)
 - [Troubleshooting](#-troubleshooting)
 
 ---
@@ -357,49 +356,6 @@ include:
 > 💡 Format: `<your-gitlab-host>/<project-path>/plumber@<tag>`
 
 </details>
-
----
-
-## 📋 Example Output
-
-```
-Project: mygroup/myproject
-
-──────────────────────────────────────────────────
-Container images must not use forbidden tags (100.0% compliant)
-──────────────────────────────────────────────────
-  Total Images: 10
-  Using Forbidden Tags: 0
-
-──────────────────────────────────────────────────
-Container images must come from authorized sources (60.0% compliant)
-──────────────────────────────────────────────────
-  Total Images: 10
-  Authorized: 6
-  Unauthorized: 4
-
-  Unauthorized Images Found:
-    • Job 'sls_scan' uses unauthorized image: docker.io/shiftleft/sast-scan:v1.15.1
-    • Job 'gitleaks' uses unauthorized image: docker.io/zricethezav/gitleaks:v8.15.0
-
-────────────────────
-Summary
-────────────────────
-  Status: FAILED ✗
-
-  Compliance
-  ╔════════════════════════════════════════════════════╤════════════╤══════════╗
-  ║ Control                                            │ Compliance │   Status ║
-  ╟────────────────────────────────────────────────────┼────────────┼──────────╢
-  ║ Container images must not use forbidden tags       │     100.0% │        ✓ ║
-  ║ Container images must come from authorized sources │      60.0% │        ✗ ║
-  ║ Branch must be protected                           │     100.0% │        ✓ ║
-  ╟────────────────────────────────────────────────────┼────────────┼──────────╢
-  ║ Total (required: 100%)                             │      86.7% │        ✗ ║
-  ╚════════════════════════════════════════════════════╧════════════╧══════════╝
-```
-
-> 💡 Use `--output results.json` to export for programmatic access. See [`output-example.json`](output-example.json).
 
 ---
 
