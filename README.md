@@ -39,7 +39,7 @@ Plumber is a compliance scanner for GitLab. It reads your `.gitlab-ci.yml` and r
 
 ## 🚀 Two Ways to Use Plumber
 
-Choose **one** of these methods: you don't need both:
+Choose **one** of these methods. You don't need both:
 
 | Method | Best for | How it works |
 |--------|----------|--------------|
