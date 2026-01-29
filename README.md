@@ -39,7 +39,7 @@ Plumber is a compliance scanner for GitLab. It reads your `.gitlab-ci.yml` and r
 
 ## 🚀 Two Ways to Use Plumber
 
-Choose **one** of these methods — you don't need both:
+Choose **one** of these methods: you don't need both:
 
 | Method | Best for | How it works |
 |--------|----------|--------------|
@@ -64,7 +64,7 @@ Choose **one** of these methods — you don't need both:
 
 ## Option 1: CLI
 
-**Try Plumber in 2 minutes** — no commits, no CI changes, just run it.
+**Try Plumber in 2 minutes!** No commits, no CI changes, just run it.
 
 ### Step 1: Install
 
@@ -76,17 +76,23 @@ chmod +x plumber-* && sudo mv plumber-* /usr/local/bin/plumber
 
 > 📦 See [Installation](#-installation) for Windows, Docker, or building from source.
 
-### Step 2: Set Your Token
+### Step 2: Create & Set Your Token
+
+1. In GitLab, go to **User Settings → Access Tokens**
+2. Create a Personal Access Token with `read_api` + `read_repository` scopes
+3. Export it in your terminal:
 
 ```bash
-export GITLAB_TOKEN=glpat-xxxx  # needs read_api + read_repository scopes
+export GITLAB_TOKEN=glpat-xxxx
 ```
+
+> 💡 You can also use a project or group access token if you prefer scoped permissions.
 
 ### Step 3: Run Analysis
 
 ```bash
 plumber analyze \
-  --gitlab-url https://gitlab.com \
+  --gitlab-url https://your-gitlab-instance.com \
   --project mygroup/myproject \
   --config .plumber.yaml \
   --threshold 100
@@ -100,16 +106,18 @@ Plumber will output a compliance report showing any issues found.
 
 ## Option 2: GitLab CI Component
 
-**Add Plumber to your GitLab pipeline** — it will run automatically on the default branch, tags and open merge requests.
+**Add Plumber to your GitLab pipeline**: it will run automatically on the default branch, tags and open merge requests.
 
 > ⚠️ These instructions are for **gitlab.com**. Self-hosted? See [Self-Hosted GitLab](#%EF%B8%8F-self-hosted-gitlab).
 
 ### Step 1: Create a GitLab Token
 
-1. Go to **Settings → Access Tokens** (project or group level)
-2. Create a token with `read_api` + `read_repository` scopes
-3. Go to **Settings → CI/CD → Variables**
-4. Add the token as `GITLAB_TOKEN` (masked & protected recommended)
+1. In GitLab, go to **User Settings → Access Tokens** ([or create one here](https://gitlab.com/-/user_settings/personal_access_tokens))
+2. Create a Personal Access Token with `read_api` + `read_repository` scopes
+3. Go to your project's **Settings → CI/CD → Variables**
+4. Add the token as `GITLAB_TOKEN` (masked recommended)
+
+> 💡 You can also use a project or group access token if you prefer scoped permissions.
 
 ### Step 2: Add to Your Pipeline
 
@@ -273,7 +281,7 @@ docker pull getplumber/plumber:latest
 docker run --rm \
   -e GITLAB_TOKEN=glpat-xxxx \
   getplumber/plumber:latest analyze \
-  --gitlab-url https://gitlab.com \
+  --gitlab-url https://your-gitlab-instance.com \
   --project mygroup/myproject \
   --config /.plumber.yaml \
   --threshold 100
