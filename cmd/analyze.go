@@ -41,10 +41,10 @@ Required environment variables:
 Required flags:
   --gitlab-url    GitLab instance URL
   --project       Full path of the project
-  --config        Path to .plumber.yaml config file
-  --threshold     Minimum compliance percentage to pass (0-100)
 
 Optional flags:
+  --config        Path to .plumber.yaml config file (default: .plumber.yaml)
+  --threshold     Minimum compliance percentage to pass, 0-100 (default: 100)
   --branch        Branch to analyze (defaults to project's default branch)
   --print         Print text output to stdout (default: true)
   --output        Write JSON results to file (optional)
@@ -57,14 +57,17 @@ Examples:
   # Set token via environment variable
   export GITLAB_TOKEN=glpat-xxxx
 
-  # Analyze a project (prints text to stdout)
-  plumber analyze --gitlab-url https://gitlab.com --project mygroup/myproject --config .plumber.yaml --threshold 100
+  # Analyze a project (uses .plumber.yaml and 100% threshold by default)
+  plumber analyze --gitlab-url https://gitlab.com --project mygroup/myproject
+
+  # Analyze with custom config and threshold
+  plumber analyze --gitlab-url https://gitlab.com --project mygroup/myproject --config custom.yaml --threshold 80
 
   # Analyze and save JSON to file (no stdout)
-  plumber analyze --gitlab-url https://gitlab.com --project mygroup/myproject --config .plumber.yaml --threshold 100 --print=false --output results.json
+  plumber analyze --gitlab-url https://gitlab.com --project mygroup/myproject --print=false --output results.json
 
   # Analyze with both text output and JSON file
-  plumber analyze --gitlab-url https://gitlab.com --project mygroup/myproject --config .plumber.yaml --threshold 100 --output results.json
+  plumber analyze --gitlab-url https://gitlab.com --project mygroup/myproject --output results.json
 `,
 	RunE: runAnalyze,
 }
@@ -75,10 +78,10 @@ func init() {
 	// Required flags
 	analyzeCmd.Flags().StringVar(&gitlabURL, "gitlab-url", "", "GitLab instance URL (required)")
 	analyzeCmd.Flags().StringVar(&projectPath, "project", "", "Full path of the project (required)")
-	analyzeCmd.Flags().StringVar(&configFile, "config", "", "Path to .plumber.yaml config file (required)")
-	analyzeCmd.Flags().Float64Var(&threshold, "threshold", 0, "Minimum compliance percentage to pass, 0-100 (required)")
 
-	// Optional flags
+	// Optional flags with defaults
+	analyzeCmd.Flags().StringVar(&configFile, "config", ".plumber.yaml", "Path to .plumber.yaml config file")
+	analyzeCmd.Flags().Float64Var(&threshold, "threshold", 100, "Minimum compliance percentage to pass, 0-100")
 	analyzeCmd.Flags().StringVar(&defaultBranch, "branch", "", "Branch to analyze (defaults to project's default branch)")
 	analyzeCmd.Flags().BoolVar(&printOutput, "print", true, "Print text output to stdout")
 	analyzeCmd.Flags().StringVarP(&outputFile, "output", "o", "", "Write JSON results to file")
@@ -86,8 +89,6 @@ func init() {
 	// Mark required flags
 	_ = analyzeCmd.MarkFlagRequired("gitlab-url")
 	_ = analyzeCmd.MarkFlagRequired("project")
-	_ = analyzeCmd.MarkFlagRequired("config")
-	_ = analyzeCmd.MarkFlagRequired("threshold")
 }
 
 func runAnalyze(cmd *cobra.Command, args []string) error {

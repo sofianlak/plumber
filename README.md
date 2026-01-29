@@ -92,10 +92,8 @@ export GITLAB_TOKEN=glpat-xxxx
 
 ```bash
 plumber analyze \
-  --gitlab-url https://your-gitlab-instance.com \
-  --project mygroup/myproject \
-  --config .plumber.yaml \
-  --threshold 100
+  --gitlab-url https://gitlab.com \
+  --project mygroup/myproject
 ```
 
 Plumber will output a compliance report showing any issues found.
@@ -175,7 +173,7 @@ include:
 
 ### Configuration File
 
-Create a `.plumber.yaml` or modify the existing one to customize which controls run and how:
+Create a `.plumber.yaml` or start from the the [fully configured one](https://github.com/getplumber/plumber/blob/main/.plumber.yaml) in this repo to customize which controls run and how:
 
 ```yaml
 version: "1.0"
@@ -282,7 +280,6 @@ docker run --rm \
   -e GITLAB_TOKEN=glpat-xxxx \
   getplumber/plumber:latest analyze \
   --gitlab-url https://your-gitlab-instance.com \
-  --project mygroup/myproject \
   --config /.plumber.yaml \
   --threshold 100
 ```
@@ -311,8 +308,8 @@ plumber analyze [flags]
 |------|----------|---------|-------------|
 | `--gitlab-url` | Yes | — | GitLab instance URL |
 | `--project` | Yes | — | Project path (e.g., `group/project`) |
-| `--config` | Yes | — | Path to `.plumber.yaml` |
-| `--threshold` | Yes | — | Minimum compliance % to pass (0-100) |
+| `--config` | No | `.plumber.yaml` | Path to config file |
+| `--threshold` | No | `100` | Minimum compliance % to pass (0-100) |
 | `--branch` | No | default | Branch to analyze |
 | `--output` | No | — | Write JSON results to file |
 | `--print` | No | `true` | Print text output to stdout |

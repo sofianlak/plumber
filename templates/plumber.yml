@@ -67,7 +67,7 @@ spec:
 #      - read_api scope
 #      - read_repository scope
 #   2. Add it as GITLAB_TOKEN in Settings > CI/CD > Variables
-#      (use masked & protected for security)
+#      (masked recommended)
 #
 # Configuration file priority:
 #   1. If config_file input is set → uses $CI_PROJECT_DIR/<config_file>
