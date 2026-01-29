@@ -357,7 +357,18 @@ If you're running a self-hosted GitLab instance, you'll need to host your own co
 - Enter a version (e.g., `1.0.0`)
 - Click **Create tag**
 
-**Step 4: Use in your pipelines**
+**Step 4: Create a GitLab Token**
+
+In the project you want to scan:
+
+1. Go to **User Settings → Access Tokens** on your GitLab instance
+2. Create a Personal Access Token with `read_api` + `read_repository` scopes
+3. Go to the project's **Settings → CI/CD → Variables**
+4. Add the token as `GITLAB_TOKEN` (masked recommended)
+
+> 💡 You can also use a project or group access token if you prefer scoped permissions.
+
+**Step 5: Use in your pipelines**
 
 ```yaml
 include:
