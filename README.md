@@ -70,7 +70,8 @@ Choose **one** of these methods. You don't need both:
 
 ```bash
 # Homebrew (macOS/Linux)
-brew install getplumber/plumber/plumber
+brew tap getplumber/plumber
+brew install plumber
 
 # Mise
 mise use -g ubi:getplumber/plumber
@@ -207,7 +208,8 @@ This creates `.plumber.yaml` with sensible [defaults](./.plumber.yaml). Customiz
 ### Homebrew
 
 ```bash
-brew install getplumber/plumber/plumber
+brew tap getplumber/plumber
+brew install plumber
 ```
 
 To install a specific version:
