@@ -1,3 +1,10 @@
+## [0.1.26](https://github.com/getplumber/plumber/compare/v0.1.25...v0.1.26) (2026-01-30)
+
+
+### ✨ Features
+
+* **brew:** Test release 0.1.26 ([1848d52](https://github.com/getplumber/plumber/commit/1848d5248fd9c38cc54d8da11b24ef9694afb48d))
+
 ## [0.1.25](https://github.com/getplumber/plumber/compare/v0.1.24...v0.1.25) (2026-01-30)
 
 
