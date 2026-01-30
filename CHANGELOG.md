@@ -1,3 +1,11 @@
+## [0.1.25](https://github.com/getplumber/plumber/compare/v0.1.24...v0.1.25) (2026-01-30)
+
+
+### 🐛 Bug Fixes
+
+* **brew:** Typo in release ([6c80575](https://github.com/getplumber/plumber/commit/6c80575c26f7294e8fa3a1553d10aa3f88864adb))
+* **brew:** Typo in release ([4d7b905](https://github.com/getplumber/plumber/commit/4d7b905d84e47f25cda4c7b770b0f8660f453f7e))
+
 ## [0.1.24](https://github.com/getplumber/plumber/compare/v0.1.23...v0.1.24) (2026-01-30)
 
 
