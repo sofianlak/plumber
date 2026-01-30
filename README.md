@@ -68,15 +68,24 @@ Choose **one** of these methods. You don't need both:
 
 ### Step 1: Install
 
+Choose **one** of the following:
+
+#### Homebrew
+
 ```bash
-# Homebrew (macOS/Linux)
 brew tap getplumber/plumber
 brew install plumber
+```
 
-# Mise
+#### Mise
+
+```bash
 mise use -g ubi:getplumber/plumber
+```
 
-# Direct download (macOS/Linux)
+#### Direct Download
+
+```bash
 curl -LO "https://github.com/getplumber/plumber/releases/latest/download/plumber-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')"
 chmod +x plumber-* && sudo mv plumber-* /usr/local/bin/plumber
 ```
@@ -215,7 +224,8 @@ brew install plumber
 To install a specific version:
 
 ```bash
-brew install getplumber/plumber/plumber@0.1.23
+brew tap getplumber/plumber
+brew install plumber@0.1.23
 ```
 
 ### Mise
