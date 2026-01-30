@@ -76,9 +76,17 @@ chmod +x plumber-* && sudo mv plumber-* /usr/local/bin/plumber
 
 > 📦 See [Installation](#-installation) for Windows, Docker, or building from source.
 
-### Step 2: Create & Set Your Token
+### Step 2: Generate a Config File
 
-1. In GitLab, go to **User Settings → Access Tokens**
+```bash
+plumber generate config
+```
+
+This creates `.plumber.yaml` with [default](./.plumber.yaml) compliance rules. You can customize it later.
+
+### Step 3: Create & Set Your Token
+
+1. In GitLab, go to **User Settings → Access Tokens** ([direct link](https://gitlab.com/-/user_settings/personal_access_tokens))
 2. Create a Personal Access Token with `read_api` + `read_repository` scopes
 3. Export it in your terminal:
 
@@ -88,7 +96,7 @@ export GITLAB_TOKEN=glpat-xxxx
 
 > 💡 You can also use a project or group access token if you prefer scoped permissions.
 
-### Step 3: Run Analysis
+### Step 4: Run Analysis
 
 ```bash
 plumber analyze \
@@ -96,9 +104,9 @@ plumber analyze \
   --project mygroup/myproject
 ```
 
-Plumber will output a compliance report showing any issues found.
+Plumber reads your `.plumber.yaml` config and outputs a compliance report.
 
-> 💡 **Like what you see?** Add Plumber to your CI/CD with the [GitLab CI Component](#option-2-gitlab-ci-component) for automated checks on the default branch, tags and open merge requests.
+> 💡 **Like what you see?** Add Plumber to your CI/CD with the [GitLab CI Component](#option-2-gitlab-ci-component) for automated checks on every pipeline.
 
 ---
 
@@ -173,34 +181,18 @@ include:
 
 ### Configuration File
 
-Create a `.plumber.yaml` or start from the the [fully configured one](https://github.com/getplumber/plumber/blob/main/.plumber.yaml) in this repo to customize which controls run and how:
+Generate a default configuration file with:
 
-```yaml
-version: "1.0"
+```bash
+plumber generate config
 
-controls:
-  imageMutable:
-    enabled: true
-    mutableTags:
-      - latest
-      - dev
-
-  imageUntrusted:
-    enabled: true
-    trustDockerHubOfficialImages: true
-    trustedUrls:
-      - registry.gitlab.com/*
-      - $CI_REGISTRY_IMAGE:*
-
-  branchProtection:
-    enabled: true
-    defaultMustBeProtected: true
-    namePatterns:
-      - main
-      - release/*
+Flags:
+  -f, --force           Overwrite existing file
+  -o, --output string   Output file path (default ".plumber.yaml")
 ```
 
-> 📄 See the [full configuration reference](.plumber.yaml) for all options.
+This creates `.plumber.yaml` with sensible [defaults](./.plumber.yaml). Customize it to fit your needs:
+
 
 ---
 
@@ -279,24 +271,27 @@ docker pull getplumber/plumber:latest
 docker run --rm \
   -e GITLAB_TOKEN=glpat-xxxx \
   getplumber/plumber:latest analyze \
-  --gitlab-url https://your-gitlab-instance.com \
-  --config /.plumber.yaml \
-  --threshold 100
+  --gitlab-url https://your-gitlab-instance.com \ 
+  --project mygroup/myproject
 ```
 
 ### Build from Source
 
-> Requires Go 1.24 or later.
+> Requires Go 1.24+ and Make.
 
 ```bash
 git clone https://github.com/getplumber/plumber.git
 cd plumber
-go build -o plumber .
+make build # or make install to build and copy to /usr/local/bin/
 ```
 
 ---
 
 ## 🔍 CLI Reference
+
+### `plumber analyze`
+
+Run compliance analysis on a GitLab project.
 
 ```bash
 plumber analyze [flags]
@@ -326,6 +321,32 @@ plumber analyze [flags]
 |------|---------|
 | `0` | Compliance ≥ threshold |
 | `1` | Compliance < threshold or error |
+
+### `plumber generate config`
+
+Generate a default `.plumber.yaml` configuration file.
+
+```bash
+plumber generate config [flags]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--output`, `-o` | `.plumber.yaml` | Output file path |
+| `--force`, `-f` | `false` | Overwrite existing file |
+
+**Examples:**
+
+```bash
+# Generate default config
+plumber generate config
+
+# Custom filename
+plumber generate config --output my-plumber.yaml
+
+# Overwrite existing file
+plumber generate config --force
+```
 
 ---
 
