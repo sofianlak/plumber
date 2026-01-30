@@ -81,8 +81,10 @@ brew install plumber
 #### Mise
 
 ```bash
-mise use -g ubi:getplumber/plumber
+mise use -g github:getplumber/plumber
 ```
+
+> Requires [mise activation](https://mise.jdx.dev/getting-started.html#activate-mise) in your shell, or run with `mise exec -- plumber`.
 
 #### Direct Download
 
@@ -233,8 +235,10 @@ brew install getplumber/plumber/plumber@0.1.26
 ### Mise
 
 ```bash
-mise use -g ubi:getplumber/plumber
+mise use -g github:getplumber/plumber
 ```
+
+> Requires [mise activation](https://mise.jdx.dev/getting-started.html#activate-mise) in your shell, or run with `mise exec -- plumber`.
 
 ### Binary Download
 
