@@ -12,7 +12,7 @@ permissions:
 jobs:
   release:
     name: Semantic Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic.outputs.new_release_version }}
@@ -43,7 +43,7 @@ jobs:
 
   binaries:
     name: Build Binaries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: release
     if: needs.release.outputs.new_release_published == 'true'
     strategy:
@@ -94,7 +94,7 @@ jobs:
 
   upload-release:
     name: Create Release & Upload Assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [release, binaries]
     if: needs.release.outputs.new_release_published == 'true'
     steps:
@@ -122,7 +122,7 @@ jobs:
 
   docker:
     name: Build & Push Docker Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: release
     if: needs.release.outputs.new_release_published == 'true'
     steps:
@@ -165,7 +165,7 @@ jobs:
 
   homebrew:
     name: Update Homebrew Tap
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [release, upload-release]
     if: needs.release.outputs.new_release_published == 'true'
     steps:
