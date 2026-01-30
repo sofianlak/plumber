@@ -69,7 +69,13 @@ Choose **one** of these methods. You don't need both:
 ### Step 1: Install
 
 ```bash
-# macOS/Linux (one-liner)
+# Homebrew (macOS/Linux)
+brew install getplumber/plumber/plumber
+
+# Mise
+mise use -g ubi:getplumber/plumber
+
+# Direct download (macOS/Linux)
 curl -LO "https://github.com/getplumber/plumber/releases/latest/download/plumber-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')"
 chmod +x plumber-* && sudo mv plumber-* /usr/local/bin/plumber
 ```
@@ -198,7 +204,25 @@ This creates `.plumber.yaml` with sensible [defaults](./.plumber.yaml). Customiz
 
 ## 📦 Installation
 
-### Binary
+### Homebrew
+
+```bash
+brew install getplumber/plumber/plumber
+```
+
+To install a specific version:
+
+```bash
+brew install getplumber/plumber/plumber@0.1.23
+```
+
+### Mise
+
+```bash
+mise use -g ubi:getplumber/plumber
+```
+
+### Binary Download
 
 <details>
 <summary><b>Linux (amd64)</b></summary>
