@@ -1,3 +1,10 @@
+## [0.1.29](https://github.com/getplumber/plumber/compare/v0.1.28...v0.1.29) (2026-02-03)
+
+
+### ✨ Features
+
+* **conf:** Add conf view and move generate under conf ([8e549e9](https://github.com/getplumber/plumber/commit/8e549e97ab462dbf46d7f5d25dea8fd77989c796))
+
 ## [0.1.28](https://github.com/getplumber/plumber/compare/v0.1.27...v0.1.28) (2026-02-02)
 
 
