@@ -162,7 +162,7 @@ Add this to your `.gitlab-ci.yml`:
 
 ```yaml
 include:
-  - component: gitlab.com/getplumber/plumber/plumber@v0.1.20
+  - component: gitlab.com/getplumber/plumber/plumber@v0.1.21
 ```
 * Get the latest version from the [Catalog](https://gitlab.com/explore/catalog/getplumber/plumber)
 
