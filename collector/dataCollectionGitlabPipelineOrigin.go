@@ -659,14 +659,90 @@ func (dc *GitlabPipelineOriginDataCollection) Run(project *gitlab.ProjectInfo, t
 					}).Debug("Extracted component information")
 				}
 
-				// If component was not found, log a debug message
+				// If component was not found in catalog, check if it's a GitLab built-in component
 				if !foundComponent {
-					lInclude.WithFields(logrus.Fields{
-						"componentIncludeLocation": originData.GitlabIncludeOrigin.Location,
-						"cleanComponentPath":       cleanPath,
-						"componentMap":             data.GitlabCatalogComponentMap,
-						"versionMap":               data.VersionMap,
-					}).Debug("Could not find a matching GitLab component")
+					// Check if this is a GitLab built-in component (e.g., gitlab.com/components/sast/sast@3.4.0)
+					// These are not in the CI/CD Catalog but we can fetch their versions from the source project
+					if strings.Contains(instance, "gitlab.com") && strings.HasPrefix(cleanPath, "components/") {
+						// Extract component name (e.g., "components/sast/sast" -> "sast")
+						pathParts := strings.Split(cleanPath, "/")
+						if len(pathParts) >= 3 && pathParts[0] == "components" {
+							componentName := pathParts[1] // e.g., "sast", "secret-detection"
+							
+							// The source project for GitLab built-in components is: components/{component-name}
+							sourceProject := "components/" + componentName
+							
+							lInclude.WithFields(logrus.Fields{
+								"sourceProject": sourceProject,
+								"componentName": componentName,
+								"version":       version,
+							}).Debug("Detected GitLab built-in component, fetching version info")
+							
+							// Fetch tags from the source project to determine latest version
+							tags, errPlatform, err := gitlab.SearchTags(sourceProject, token, conf.GitlabURL, conf)
+							if err != nil || errPlatform != nil {
+								lInclude.WithFields(logrus.Fields{
+									"err":         err,
+									"errPlatform": errPlatform,
+								}).Debug("Could not fetch tags from GitLab built-in component source project")
+							} else if len(tags) > 0 {
+								// Parse and sort versions semantically
+								var validVersions []string
+								for _, tag := range tags {
+									// GitLab component tags are typically just version numbers (e.g., "3.4.0", "2.2.0")
+									// Skip non-version tags
+									if _, verr := gover.NewVersion(tag); verr == nil {
+										validVersions = append(validVersions, tag)
+									}
+								}
+								
+								if len(validVersions) > 0 {
+									// Sort versions (newest first)
+									sort.Slice(validVersions, func(i, j int) bool {
+										v1, _ := gover.NewVersion(validVersions[i])
+										v2, _ := gover.NewVersion(validVersions[j])
+										return v1.GreaterThan(v2)
+									})
+									
+									latestVersion := validVersions[0]
+									
+									// Mark as found in GitLab catalog (even though it's a built-in component)
+									originData.FromGitlabCatalog = true
+									foundComponent = true
+									
+									// Set component data
+									originData.GitlabComponent = GitlabPipelineJobGitlabComponent{
+										RepoFullPath:           sourceProject + "/" + componentName,
+										RepoWebPath:            "/" + sourceProject,
+										RepoName:               componentName,
+										ComponentName:          componentName,
+										ComponentIncludePath:   instance + "/" + cleanPath,
+										ComponentLatestVersion: latestVersion,
+									}
+									
+									// Check if version is up to date
+									originData.UpToDate = gitlab.IsUpToDate(version, latestVersion, latestRefs)
+									
+									lInclude.WithFields(logrus.Fields{
+										"currentVersion": version,
+										"latestVersion":  latestVersion,
+										"upToDate":       originData.UpToDate,
+										"validVersions":  validVersions,
+									}).Debug("GitLab built-in component version check completed")
+								}
+							}
+						}
+					}
+					
+					// If still not found, log a debug message
+					if !foundComponent {
+						lInclude.WithFields(logrus.Fields{
+							"componentIncludeLocation": originData.GitlabIncludeOrigin.Location,
+							"cleanComponentPath":       cleanPath,
+							"componentMap":             data.GitlabCatalogComponentMap,
+							"versionMap":               data.VersionMap,
+						}).Debug("Could not find a matching GitLab component")
+					}
 				}
 
 			// External file (project)
