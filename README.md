@@ -125,7 +125,7 @@ export GITLAB_TOKEN=glpat-xxxx
 
 ### Step 4: Run Analysis
 
-⚠️ Plumber auto-detects the GitLab URL and project from your git remote but requires the remote to be set to 'origin'. 
+Plumber auto-detects the GitLab URL and project from your git remote but requires the remote to be set to 'origin'. 
 ```bash
 # if in git remote with remote = origin, run:
 plumber analyze
@@ -144,7 +144,7 @@ It reads your `.plumber.yaml` config and outputs a compliance report. You can al
 
 **Add Plumber to your GitLab pipeline**: it will run automatically on the default branch, tags and open merge requests.
 
-> ⚠️ These instructions are for **gitlab.com**. Self-hosted? See [Self-Hosted GitLab](#%EF%B8%8F-self-hosted-gitlab).
+> 💬 These instructions are for **gitlab.com**. Self-hosted? See [Self-Hosted GitLab](#%EF%B8%8F-self-hosted-gitlab).
 
 ### Step 1: Create a GitLab Token
 
