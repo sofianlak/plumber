@@ -1,3 +1,10 @@
+## [0.1.32](https://github.com/getplumber/plumber/compare/v0.1.31...v0.1.32) (2026-02-04)
+
+
+### ✨ Features
+
+* **control:** Make component collecetion compatible with gitlab built-in components ([532f071](https://github.com/getplumber/plumber/commit/532f071544c58f8c3af1cbf4771b43a1e296a799))
+
 ## [0.1.31](https://github.com/getplumber/plumber/compare/v0.1.30...v0.1.31) (2026-02-04)
 
 
