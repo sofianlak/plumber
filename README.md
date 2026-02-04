@@ -31,6 +31,10 @@ Plumber is a compliance scanner for GitLab. It reads your `.gitlab-ci.yml` and r
 - Container images using mutable tags (`latest`, `dev`)
 - Container images from untrusted registries
 - Unprotected branches
+- Hardcoded jobs not from includes/components
+- Outdated includes/templates
+- Forbidden version patterns (e.g., `main`, `HEAD`)
+- Missing required components or templates
 
 **How does it work?** Plumber connects to your GitLab instance via API, analyzes your pipeline configuration, and reports any issues it finds. You define what's allowed in a config file (`.plumber.yaml`), and Plumber tells you if your project complies.
 
@@ -55,6 +59,8 @@ Choose **one** of these methods. You don't need both:
 - [CLI](#option-1-cli)
 - [GitLab CI Component](#option-2-gitlab-ci-component)
 - [Configuration](#%EF%B8%8F-configuration)
+  - [Available Controls](#available-controls)
+  - [Example Output](#example-output)
 - [Installation](#-installation)
 - [CLI Reference](#-cli-reference)
 - [Self-Hosted GitLab](#%EF%B8%8F-self-hosted-gitlab)
@@ -114,8 +120,6 @@ This creates `.plumber.yaml` with [default](./.plumber.yaml) compliance rules. Y
 export GITLAB_TOKEN=glpat-xxxx
 ```
 
-> 💡 You can also use a project or group access token if you prefer scoped permissions.
-
 ### Step 4: Run Analysis
 
 ```bash
@@ -148,7 +152,6 @@ It reads your `.plumber.yaml` config and outputs a compliance report. You can al
 3. Go to your project's **Settings → CI/CD → Variables**
 4. Add the token as `GITLAB_TOKEN` (masked recommended)
 
-> 💡 You can also use a project or group access token if you prefer scoped permissions.
 
 ### Step 2: Add to Your Pipeline
 
@@ -156,8 +159,9 @@ Add this to your `.gitlab-ci.yml`:
 
 ```yaml
 include:
-  - component: gitlab.com/getplumber/plumber/plumber@~latest
+  - component: gitlab.com/getplumber/plumber/plumber@v0.1.20
 ```
+* Get the latest version from the [Catalog](https://gitlab.com/explore/catalog/getplumber/plumber)
 
 ### Step 3: Run Your Pipeline
 
@@ -216,8 +220,166 @@ Flags:
   -o, --output string   Output file path (default ".plumber.yaml")
 ```
 
-This creates `.plumber.yaml` with sensible [defaults](./.plumber.yaml). Customize it to fit your needs:
+This creates `.plumber.yaml` with sensible [defaults](./.plumber.yaml). Customize it to fit your needs.
 
+### Available Controls
+
+Plumber includes 8 compliance controls. Each can be enabled/disabled and customized in [.plumber.yaml](.plumber.yaml):
+
+<details>
+<summary><b>1. Container images must not use forbidden tags</b></summary>
+
+Detects container images using mutable tags that can change unexpectedly.
+
+```yaml
+containerImageMustNotUseForbiddenTags:
+  enabled: true
+  tags:
+    - latest
+    - dev
+    - development
+    - staging
+    - main
+    - master
+```
+
+</details>
+
+<details>
+<summary><b>2. Container images must come from authorized sources</b></summary>
+
+Ensures container images come from trusted registries only.
+
+```yaml
+containerImageMustComeFromAuthorizedSources:
+  enabled: true
+  trustDockerHubOfficialImages: true
+  trustedUrls:
+    - docker.io/docker:*
+    - gcr.io/kaniko-project/*
+    - $CI_REGISTRY_IMAGE:*
+    - $CI_REGISTRY_IMAGE/*
+    - getplumber/plumber:*
+    - docker.io/getplumber/plumber:*
+    - registry.gitlab.com/security-products/*
+```
+
+</details>
+
+<details>
+<summary><b>3. Branch must be protected</b></summary>
+
+Verifies that critical branches have proper protection settings.
+
+```yaml
+branchMustBeProtected:
+  enabled: true
+  defaultMustBeProtected: true
+  namePatterns:
+    - main
+    - master
+    - release/*
+    - production
+    - dev
+  allowForcePush: false
+  codeOwnerApprovalRequired: false
+  minMergeAccessLevel: 30   # Developer
+  minPushAccessLevel: 40    # Maintainer
+```
+
+</details>
+
+<details>
+<summary><b>4. Pipeline must not include hardcoded jobs</b></summary>
+
+Detects jobs defined directly in `.gitlab-ci.yml` instead of coming from includes/components.
+
+```yaml
+pipelineMustNotIncludeHardcodedJobs:
+  enabled: true
+```
+
+</details>
+
+<details>
+<summary><b>5. Includes must be up to date</b></summary>
+
+Checks if included templates/components have newer versions available.
+
+```yaml
+includesMustBeUpToDate:
+  enabled: true
+```
+
+</details>
+
+<details>
+<summary><b>6. Includes must not use forbidden versions</b></summary>
+
+Prevents use of mutable version references for includes that can change unexpectedly.
+
+```yaml
+includesMustNotUseForbiddenVersions:
+  enabled: true
+  forbiddenVersions:
+    - latest
+    - "~latest"
+    - main
+    - master
+    - HEAD
+  defaultBranchIsForbiddenVersion: false
+```
+
+</details>
+
+<details>
+<summary><b>7. Pipeline must include component</b></summary>
+
+Ensures required GitLab CI/CD components are included in the pipeline.
+Uses DNF (Disjunctive Normal Form) logic for requirements.
+
+```yaml
+pipelineMustIncludeComponent:
+  enabled: false  # Disabled by default - enable and configure for your org
+  # DNF format: outer array = OR, inner array = AND
+  # Example: must have (secret-detection AND sast) OR (full-security-pipeline)
+  requiredGroups: []
+    # - ["components/secret-detection/secret-detection", "components/sast/sast"]
+    # - ["your-org/full-security-pipeline"]
+```
+
+</details>
+
+<details>
+<summary><b>8. Pipeline must include template</b></summary>
+
+Ensures required templates (project includes) are present in the pipeline.
+Uses DNF (Disjunctive Normal Form) logic for requirements.
+
+```yaml
+pipelineMustIncludeTemplate:
+  enabled: false  # Disabled by default - enable and configure for your org
+  # DNF format: outer array = OR, inner array = AND
+  # Example: must have (go AND trivy AND iso27001)
+  requiredGroups: []
+    # - ["templates/go/go", "templates/trivy/trivy", "templates/iso27001/iso27001"]
+    # - ["templates/full-go-pipeline"]
+```
+
+</details>
+
+### Example Output
+
+Plumber provides colorized terminal output for easy scanning:
+
+<p align="center">
+  <img src="assets/plumber-output.png" alt="Plumber Output Example" width="800">
+</p>
+
+- **Green checkmarks (✓)** indicate passing controls
+- **Red crosses (✗)** indicate failing controls  
+- **Yellow bullets (•)** highlight specific issues found
+- Summary tables show compliance percentages at a glance
 
 ---
 
@@ -464,7 +626,6 @@ In the project you want to scan:
 3. Go to the project's **Settings → CI/CD → Variables**
 4. Add the token as `GITLAB_TOKEN` (masked recommended)
 
-> 💡 You can also use a project or group access token if you prefer scoped permissions.
 
 **Step 5: Use in your pipelines**
 

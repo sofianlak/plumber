@@ -188,6 +188,31 @@ func runAnalyze(cmd *cobra.Command, args []string) error {
 		controlCount++
 	}
 
+	if result.HardcodedJobsResult != nil && !result.HardcodedJobsResult.Skipped {
+		complianceSum += result.HardcodedJobsResult.Compliance
+		controlCount++
+	}
+
+	if result.OutdatedIncludesResult != nil && !result.OutdatedIncludesResult.Skipped {
+		complianceSum += result.OutdatedIncludesResult.Compliance
+		controlCount++
+	}
+
+	if result.ForbiddenVersionsIncludesResult != nil && !result.ForbiddenVersionsIncludesResult.Skipped {
+		complianceSum += result.ForbiddenVersionsIncludesResult.Compliance
+		controlCount++
+	}
+
+	if result.RequiredComponentsResult != nil && !result.RequiredComponentsResult.Skipped {
+		complianceSum += result.RequiredComponentsResult.Compliance
+		controlCount++
+	}
+
+	if result.RequiredTemplatesResult != nil && !result.RequiredTemplatesResult.Skipped {
+		complianceSum += result.RequiredTemplatesResult.Compliance
+		controlCount++
+	}
+
 	// Calculate average compliance
 	// If no controls ran (e.g., data collection failed), compliance is 0% - we can't verify anything
 	var compliance float64 = 0
@@ -377,6 +402,147 @@ func outputText(result *control.AnalysisResult, threshold, compliance float64, c
 							fmt.Printf("      └─ Push access level is too low (%d, minimum: %d)\n", issue.MinPushAccessLevel, issue.AuthorizedMinPushAccessLevel)
 						}
 					}
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	// Control 4: Pipeline must not include hardcoded jobs
+	if result.HardcodedJobsResult != nil {
+		ctrl := controlSummary{
+			name:       "Pipeline must not include hardcoded jobs",
+			compliance: result.HardcodedJobsResult.Compliance,
+			issues:     len(result.HardcodedJobsResult.Issues),
+			skipped:    result.HardcodedJobsResult.Skipped,
+		}
+		controls = append(controls, ctrl)
+
+		printControlHeader("Pipeline must not include hardcoded jobs", result.HardcodedJobsResult.Compliance, result.HardcodedJobsResult.Skipped)
+
+		if result.HardcodedJobsResult.Skipped {
+			fmt.Printf("  %sStatus: SKIPPED (disabled in configuration)%s\n", colorDim, colorReset)
+		} else {
+			fmt.Printf("  Total Jobs: %d\n", result.HardcodedJobsResult.Metrics.Total)
+			fmt.Printf("  Hardcoded Jobs: %d\n", result.HardcodedJobsResult.Metrics.HardcodedJobs)
+
+			if len(result.HardcodedJobsResult.Issues) > 0 {
+				fmt.Printf("\n  %sHardcoded Jobs Found:%s\n", colorYellow, colorReset)
+				for _, issue := range result.HardcodedJobsResult.Issues {
+					fmt.Printf("    %s•%s Job '%s' is hardcoded (not from include/component)\n", colorYellow, colorReset, issue.JobName)
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	// Control 5: Includes must be up to date
+	if result.OutdatedIncludesResult != nil {
+		ctrl := controlSummary{
+			name:       "Includes must be up to date",
+			compliance: result.OutdatedIncludesResult.Compliance,
+			issues:     len(result.OutdatedIncludesResult.Issues),
+			skipped:    result.OutdatedIncludesResult.Skipped,
+		}
+		controls = append(controls, ctrl)
+
+		printControlHeader("Includes must be up to date", result.OutdatedIncludesResult.Compliance, result.OutdatedIncludesResult.Skipped)
+
+		if result.OutdatedIncludesResult.Skipped {
+			fmt.Printf("  %sStatus: SKIPPED (disabled in configuration)%s\n", colorDim, colorReset)
+		} else {
+			fmt.Printf("  Total Includes: %d\n", result.OutdatedIncludesResult.Metrics.Total)
+			fmt.Printf("  Outdated: %d\n", result.OutdatedIncludesResult.Metrics.OriginOutdated)
+
+			if len(result.OutdatedIncludesResult.Issues) > 0 {
+				fmt.Printf("\n  %sOutdated Includes Found:%s\n", colorYellow, colorReset)
+				for _, issue := range result.OutdatedIncludesResult.Issues {
+					fmt.Printf("    %s•%s %s uses version '%s' (latest: %s)\n", colorYellow, colorReset, issue.GitlabIncludeLocation, issue.Version, issue.LatestVersion)
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	// Control 6: Includes must not use forbidden versions
+	if result.ForbiddenVersionsIncludesResult != nil {
+		ctrl := controlSummary{
+			name:       "Includes must not use forbidden versions",
+			compliance: result.ForbiddenVersionsIncludesResult.Compliance,
+			issues:     len(result.ForbiddenVersionsIncludesResult.Issues),
+			skipped:    result.ForbiddenVersionsIncludesResult.Skipped,
+		}
+		controls = append(controls, ctrl)
+
+		printControlHeader("Includes must not use forbidden versions", result.ForbiddenVersionsIncludesResult.Compliance, result.ForbiddenVersionsIncludesResult.Skipped)
+
+		if result.ForbiddenVersionsIncludesResult.Skipped {
+			fmt.Printf("  %sStatus: SKIPPED (disabled in configuration)%s\n", colorDim, colorReset)
+		} else {
+			fmt.Printf("  Total Includes: %d\n", result.ForbiddenVersionsIncludesResult.Metrics.Total)
+			fmt.Printf("  Using Authorized Versions: %d\n", result.ForbiddenVersionsIncludesResult.Metrics.UsingAuthorizedVersion)
+			fmt.Printf("  Using Forbidden Versions: %d\n", result.ForbiddenVersionsIncludesResult.Metrics.UsingForbiddenVersion)
+
+			if len(result.ForbiddenVersionsIncludesResult.Issues) > 0 {
+				fmt.Printf("\n  %sForbidden Versions Found:%s\n", colorYellow, colorReset)
+				for _, issue := range result.ForbiddenVersionsIncludesResult.Issues {
+					fmt.Printf("    %s•%s %s uses forbidden version '%s'\n", colorYellow, colorReset, issue.GitlabIncludeLocation, issue.Version)
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	// Control 7: Pipeline must include component
+	if result.RequiredComponentsResult != nil {
+		ctrl := controlSummary{
+			name:       "Pipeline must include component",
+			compliance: result.RequiredComponentsResult.Compliance,
+			issues:     len(result.RequiredComponentsResult.Issues),
+			skipped:    result.RequiredComponentsResult.Skipped,
+		}
+		controls = append(controls, ctrl)
+
+		printControlHeader("Pipeline must include component", result.RequiredComponentsResult.Compliance, result.RequiredComponentsResult.Skipped)
+
+		if result.RequiredComponentsResult.Skipped {
+			fmt.Printf("  %sStatus: SKIPPED (disabled in configuration)%s\n", colorDim, colorReset)
+		} else {
+			fmt.Printf("  Requirement Groups: %d\n", result.RequiredComponentsResult.Metrics.TotalGroups)
+			fmt.Printf("  Satisfied Groups: %d\n", result.RequiredComponentsResult.Metrics.SatisfiedGroups)
+
+			if len(result.RequiredComponentsResult.Issues) > 0 {
+				fmt.Printf("\n  %sMissing Components:%s\n", colorYellow, colorReset)
+				for _, issue := range result.RequiredComponentsResult.Issues {
+					fmt.Printf("    %s•%s %s (group %d)\n", colorYellow, colorReset, issue.ComponentPath, issue.GroupIndex+1)
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	// Control 8: Pipeline must include template
+	if result.RequiredTemplatesResult != nil {
+		ctrl := controlSummary{
+			name:       "Pipeline must include template",
+			compliance: result.RequiredTemplatesResult.Compliance,
+			issues:     len(result.RequiredTemplatesResult.Issues),
+			skipped:    result.RequiredTemplatesResult.Skipped,
+		}
+		controls = append(controls, ctrl)
+
+		printControlHeader("Pipeline must include template", result.RequiredTemplatesResult.Compliance, result.RequiredTemplatesResult.Skipped)
+
+		if result.RequiredTemplatesResult.Skipped {
+			fmt.Printf("  %sStatus: SKIPPED (disabled in configuration)%s\n", colorDim, colorReset)
+		} else {
+			fmt.Printf("  Requirement Groups: %d\n", result.RequiredTemplatesResult.Metrics.TotalGroups)
+			fmt.Printf("  Satisfied Groups: %d\n", result.RequiredTemplatesResult.Metrics.SatisfiedGroups)
+
+			if len(result.RequiredTemplatesResult.Issues) > 0 {
+				fmt.Printf("\n  %sMissing Templates:%s\n", colorYellow, colorReset)
+				for _, issue := range result.RequiredTemplatesResult.Issues {
+					fmt.Printf("    %s•%s %s (group %d)\n", colorYellow, colorReset, issue.TemplatePath, issue.GroupIndex+1)
 				}
 			}
 		}

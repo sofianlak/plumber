@@ -68,6 +68,9 @@ controls:
       # Plumber
       - getplumber/plumber:*
       - docker.io/getplumber/plumber:*
+
+      # Security products
+      - registry.gitlab.com/security-products/*
       
       # Add your organization's trusted registries below:
       # - your-registry.example.com/*
@@ -110,3 +113,108 @@ controls:
     
     # Minimum access level required to push (0=No one, 30=Developer, 40=Maintainer)
     minPushAccessLevel: 40
+
+  # ===========================================
+  # Pipeline must not include hardcoded jobs
+  # ===========================================
+  # Detects CI/CD jobs that are defined directly in the .gitlab-ci.yml file
+  # instead of being included from reusable components or templates.
+  #
+  # Hardcoded jobs make pipelines harder to maintain and don't benefit from
+  # centralized updates when best practices change.
+  #
+  # Best practice: Use CI/CD components, templates, or includes for job definitions
+  pipelineMustNotIncludeHardcodedJobs:
+    # Set to false to disable this control
+    enabled: true
+
+  # ===========================================
+  # Includes must be up to date
+  # ===========================================
+  # Detects CI/CD includes (components, templates, project files) from the
+  # GitLab CI Catalog that are not using the latest available version.
+  #
+  # Outdated includes may miss important bug fixes, security patches,
+  # or new features.
+  #
+  # Best practice: Regularly update includes to their latest versions
+  includesMustBeUpToDate:
+    # Set to false to disable this control
+    enabled: true
+
+  # ===========================================
+  # Includes must not use forbidden versions
+  # ===========================================
+  # Detects CI/CD includes (components, templates, project files) using
+  # mutable/forbidden version references like 'latest', 'main', 'master', or 'HEAD'.
+  #
+  # Mutable versions can change unexpectedly, making builds non-reproducible
+  # and potentially introducing breaking changes without warning.
+  #
+  # Best practice: Use specific version tags (e.g., v1.2.3, ~1.0) for includes
+  includesMustNotUseForbiddenVersions:
+    # Set to false to disable this control
+    enabled: true
+
+    # Version patterns considered forbidden - includes using these will be flagged
+    forbiddenVersions:
+      - latest
+      - "~latest"
+      - main
+      - master
+      - HEAD
+      # Add your organization's custom forbidden versions below:
+      # - dev
+      # - develop
+      # - staging
+
+    # When true, adds the project's default branch to forbidden versions
+    defaultBranchIsForbiddenVersion: false
+
+  # ============================================================================
+  # Pipeline Must Include Component
+  # ============================================================================
+  # This control verifies that the CI pipeline includes required GitLab CI/CD
+  # components. It helps enforce organizational standards by ensuring pipelines
+  # include mandatory security, compliance, or utility components.
+  #
+  # The control uses DNF (Disjunctive Normal Form) logic for requirements:
+  # - Outer array = OR (at least one group must be satisfied)
+  # - Inner array = AND (all components in group must be present)
+  #
+  # Example: [["security-scan", "sast"], ["full-pipeline"]] means:
+  #   "must have (security-scan AND sast) OR (full-pipeline)"
+  pipelineMustIncludeComponent:
+    # Set to true to enable this control
+    enabled: false
+
+    # Required component groups (DNF format)
+    # Specify component paths without version (e.g., "group/project/component-name")
+    requiredGroups: []
+      # Example configuration:
+      # - ["components/secret-detection/secret-detection", "components/sast/sast"]
+      # - ["your-org/full-security-pipeline"]
+
+  # ============================================================================
+  # Pipeline Must Include Template
+  # ============================================================================
+  # This control verifies that the CI pipeline includes required templates
+  # (project includes). It helps enforce organizational standards by ensuring
+  # pipelines include mandatory templates for security, compliance, or workflows.
+  #
+  # The control uses DNF (Disjunctive Normal Form) logic for requirements:
+  # - Outer array = OR (at least one group must be satisfied)
+  # - Inner array = AND (all templates in group must be present)
+  #
+  # Example: [["templates/go/go", "templates/trivy/trivy"], ["templates/full-pipeline"]] means:
+  #   "must have (go AND trivy) OR (full-pipeline)"
+  pipelineMustIncludeTemplate:
+    # Set to true to enable this control
+    enabled: false
+
+    # Required template groups (DNF format)
+    # Specify template paths (e.g., "templates/go/go" or your org's template paths)
+    requiredGroups: []
+      # Example configuration:
+      # - ["templates/go/go", "templates/trivy/trivy", "templates/iso27001/iso27001"]
+      # - ["templates/full-go-pipeline"]

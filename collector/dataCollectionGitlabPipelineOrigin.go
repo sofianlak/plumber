@@ -97,10 +97,20 @@ type GitlabPipelineOriginDataFull struct {
 
 type GitlabPipelineOriginDataGeneric struct {
 	OriginType          string                           `json:"originType"`
+	FromPlumber         bool                             `json:"fromPlumber"`
 	FromGitlabCatalog   bool                             `json:"fromGitlabCatalog"`
+	PlumberOrigin       GitlabPipelineJobPlumberOrigin   `json:"plumberOrigin"`
 	GitlabIncludeOrigin gitlab.IncludeOriginWithoutRef   `json:"gitlabIncludeOrigin"`
 	GitlabComponent     GitlabPipelineJobGitlabComponent `json:"gitlabComponent"`
 	OriginHash          uint64                           `json:"originHash"`
+}
+
+// GitlabPipelineJobPlumberOrigin represents a Plumber template origin
+type GitlabPipelineJobPlumberOrigin struct {
+	ID                uint   `json:"id"`
+	Path              string `json:"path"`
+	LatestVersion     string `json:"latestVersion"`
+	RepoDefaultBranch string `json:"repoDefaultBranch"`
 }
 
 type GitlabPipelineOriginDataProjectSpecific struct {
@@ -537,10 +547,12 @@ func (dc *GitlabPipelineOriginDataCollection) Run(project *gitlab.ProjectInfo, t
 			///////////////////////////////////////////////////////////////////////
 
 			originData := GitlabPipelineOriginDataFull{}
+			originData.FromPlumber = false
 			originData.FromGitlabCatalog = false
 			originData.Version = ""
 			originData.UpToDate = false
 			originData.Nested = isNested
+			originData.PlumberOrigin = GitlabPipelineJobPlumberOrigin{}
 			originData.GitlabComponent = GitlabPipelineJobGitlabComponent{}
 			originData.GitlabIncludeOrigin = gitlab.IncludeOriginWithoutRef{
 				Location: include.Location,
@@ -662,8 +674,86 @@ func (dc *GitlabPipelineOriginDataCollection) Run(project *gitlab.ProjectInfo, t
 
 				// Set type
 				originData.OriginType = originProject
-				// Set version
+				// Set version from ref
 				originData.Version = include.Extra.Ref
+
+				// Try to detect if this project include is outdated by checking tags
+				// The ref format can be: templates/go/go@0.1.0
+				// We need to extract the prefix (templates/go/go@) and find the latest version
+				if include.Extra.Project != "" && include.Extra.Ref != "" {
+					// Check if ref contains @ (version separator)
+					if strings.Contains(include.Extra.Ref, "@") {
+						parts := strings.Split(include.Extra.Ref, "@")
+						if len(parts) == 2 {
+							prefix := parts[0] + "@"
+							currentVersion := parts[1]
+							originData.Version = currentVersion
+
+							// Fetch tags from the source project
+							lInclude.WithFields(logrus.Fields{
+								"sourceProject":  include.Extra.Project,
+								"prefix":         prefix,
+								"currentVersion": currentVersion,
+							}).Debug("Fetching tags to check for outdated version")
+
+							// Fetch source project info to get default branch (for forbidden version check)
+							sourceProject, errProject := gitlab.FetchProjectDetails(include.Extra.Project, token, conf.GitlabURL, conf)
+							if errProject == nil && sourceProject != nil {
+								originData.PlumberOrigin.RepoDefaultBranch = sourceProject.DefaultBranch
+							}
+
+							tags, errPlatform, err := gitlab.SearchTags(include.Extra.Project, token, conf.GitlabURL, conf)
+							if err != nil || errPlatform != nil {
+								lInclude.WithFields(logrus.Fields{
+									"err":         err,
+									"errPlatform": errPlatform,
+								}).Debug("Could not fetch tags from source project")
+							} else {
+								// Find all tags matching the prefix and extract versions
+								var matchingVersions []string
+								for _, tag := range tags {
+									if strings.HasPrefix(tag, prefix) {
+										tagVersion := strings.TrimPrefix(tag, prefix)
+										if tagVersion != "" {
+											matchingVersions = append(matchingVersions, tagVersion)
+										}
+									}
+								}
+
+								if len(matchingVersions) > 0 {
+									// Sort versions (newest first) using semantic versioning
+									sort.Slice(matchingVersions, func(i, j int) bool {
+										v1, err1 := gover.NewVersion(matchingVersions[i])
+										v2, err2 := gover.NewVersion(matchingVersions[j])
+										if err1 == nil && err2 == nil {
+											return v1.GreaterThan(v2)
+										}
+										return matchingVersions[i] > matchingVersions[j]
+									})
+
+									latestVersion := matchingVersions[0]
+									originData.PlumberOrigin.LatestVersion = latestVersion
+									originData.PlumberOrigin.Path = prefix[:len(prefix)-1] // Remove trailing @
+
+									// Mark as "Plumber" origin so the control picks it up for outdated checking
+									// This includes any versioned project include where we can determine latest version
+									originData.FromPlumber = true
+
+									// Check if up to date
+									originData.UpToDate = gitlab.IsUpToDate(currentVersion, latestVersion, latestRefs)
+
+									lInclude.WithFields(logrus.Fields{
+										"currentVersion":   currentVersion,
+										"latestVersion":    latestVersion,
+										"matchingVersions": matchingVersions,
+										"upToDate":         originData.UpToDate,
+										"fromPlumber":      originData.FromPlumber,
+									}).Debug("Version check completed for project include")
+								}
+							}
+						}
+					}
+				}
 
 			// Local file
 			case glOriginLocal:
@@ -797,6 +887,7 @@ func (dc *GitlabPipelineOriginDataCollection) Run(project *gitlab.ProjectInfo, t
 		/////////////////////////////////////////////////
 
 		originData := GitlabPipelineOriginDataFull{}
+		originData.PlumberOrigin = GitlabPipelineJobPlumberOrigin{}
 		originData.GitlabComponent = GitlabPipelineJobGitlabComponent{}
 		originData.GitlabIncludeOrigin = gitlab.IncludeOriginWithoutRef{}
 		originData.OriginType = originHardcoded
@@ -859,7 +950,7 @@ func (dc *GitlabPipelineOriginDataCollection) Run(project *gitlab.ProjectInfo, t
 		}
 
 		// Count outdated origins (those that are not up to date)
-		if origin.FromGitlabCatalog && !origin.UpToDate {
+		if (origin.FromPlumber || origin.FromGitlabCatalog) && !origin.UpToDate {
 			metrics.OriginOutdated++
 		}
 	}

@@ -124,6 +124,9 @@ func runConfigView(cmd *cobra.Command, args []string) error {
 	// Convert to string for processing
 	output := string(cleanYAML)
 
+	// Format nested arrays (like requiredGroups) for better readability
+	output = formatNestedArrays(output)
+
 	// Colorize if enabled
 	if useColor {
 		output = colorizeBooleans(output)
@@ -147,6 +150,113 @@ func colorizeBooleans(input string) string {
 	}
 
 	return strings.Join(lines, "\n")
+}
+
+// formatNestedArrays converts block-style nested arrays to flow-style for better readability
+// Changes:
+//
+//	requiredGroups:
+//	- - item1
+//	  - item2
+//	- - item3
+//
+// To:
+//
+//	requiredGroups:
+//	  - [item1, item2]
+//	  - [item3]
+func formatNestedArrays(input string) string {
+	lines := strings.Split(input, "\n")
+	var result []string
+	i := 0
+
+	for i < len(lines) {
+		line := lines[i]
+
+		// Check if this line is a key ending with "Groups:" (like requiredGroups:)
+		if strings.HasSuffix(strings.TrimSpace(line), "Groups:") || strings.HasSuffix(strings.TrimSpace(line), "groups:") {
+			result = append(result, line)
+			i++
+
+			// Get the base indentation for the array items
+			baseIndent := ""
+			if i < len(lines) {
+				// Find indentation of first "- -" pattern
+				trimmed := strings.TrimLeft(lines[i], " ")
+				baseIndent = strings.Repeat(" ", len(lines[i])-len(trimmed))
+			}
+
+			// Process nested arrays
+			for i < len(lines) {
+				currentLine := lines[i]
+				trimmedCurrent := strings.TrimSpace(currentLine)
+
+				// Check if this is the start of a nested array (- - pattern or just -)
+				if strings.HasPrefix(trimmedCurrent, "- -") || strings.HasPrefix(trimmedCurrent, "- ") {
+					// Collect all items in this group
+					var groupItems []string
+
+					// Get current line's indentation
+					lineIndent := len(currentLine) - len(strings.TrimLeft(currentLine, " "))
+
+					// Check if it's a "- -" pattern (nested array start)
+					if strings.HasPrefix(trimmedCurrent, "- -") {
+						// First item is after "- -"
+						firstItem := strings.TrimPrefix(trimmedCurrent, "- -")
+						firstItem = strings.TrimSpace(firstItem)
+						if firstItem != "" {
+							groupItems = append(groupItems, firstItem)
+						}
+						i++
+
+						// Continue collecting items that are indented (continuation of same group)
+						for i < len(lines) {
+							nextLine := lines[i]
+							nextTrimmed := strings.TrimSpace(nextLine)
+							nextIndent := len(nextLine) - len(strings.TrimLeft(nextLine, " "))
+
+							// If it's a "- " at greater indent, it's part of this group
+							if strings.HasPrefix(nextTrimmed, "- ") && nextIndent > lineIndent {
+								item := strings.TrimPrefix(nextTrimmed, "- ")
+								item = strings.TrimSpace(item)
+								if item != "" {
+									groupItems = append(groupItems, item)
+								}
+								i++
+							} else {
+								break
+							}
+						}
+
+						// Format as flow-style array
+						if len(groupItems) > 0 {
+							flowArray := "[" + strings.Join(groupItems, ", ") + "]"
+							result = append(result, baseIndent+"  - "+flowArray)
+						}
+					} else if strings.HasPrefix(trimmedCurrent, "- ") && !strings.HasPrefix(trimmedCurrent, "- -") {
+						// Single item array or regular list item - check if we're still in requiredGroups context
+						// This might be a different key, so break out
+						break
+					}
+				} else if trimmedCurrent == "" {
+					// Empty line, keep it
+					result = append(result, currentLine)
+					i++
+				} else if !strings.HasPrefix(trimmedCurrent, "-") && strings.Contains(trimmedCurrent, ":") {
+					// This is a new key, break out of the nested array processing
+					break
+				} else {
+					// Something else, move on
+					i++
+				}
+			}
+		} else {
+			result = append(result, line)
+			i++
+		}
+	}
+
+	return strings.Join(result, "\n")
 }
 
 func runConfigGenerate(cmd *cobra.Command, args []string) error {

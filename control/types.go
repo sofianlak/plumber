@@ -21,9 +21,14 @@ type AnalysisResult struct {
 	PipelineImageMetrics *PipelineImageMetricsSummary `json:"pipelineImageMetrics,omitempty"`
 
 	// Control results
-	ImageForbiddenTagsResult     *GitlabImageForbiddenTagsResult     `json:"imageForbiddenTagsResult,omitempty"`
-	ImageAuthorizedSourcesResult *GitlabImageAuthorizedSourcesResult `json:"imageAuthorizedSourcesResult,omitempty"`
-	BranchProtectionResult       *GitlabBranchProtectionResult       `json:"branchProtectionResult,omitempty"`
+	ImageForbiddenTagsResult        *GitlabImageForbiddenTagsResult               `json:"imageForbiddenTagsResult,omitempty"`
+	ImageAuthorizedSourcesResult    *GitlabImageAuthorizedSourcesResult           `json:"imageAuthorizedSourcesResult,omitempty"`
+	BranchProtectionResult          *GitlabBranchProtectionResult                 `json:"branchProtectionResult,omitempty"`
+	HardcodedJobsResult             *GitlabPipelineHardcodedJobsResult            `json:"hardcodedJobsResult,omitempty"`
+	OutdatedIncludesResult          *GitlabPipelineIncludesOutdatedResult         `json:"outdatedIncludesResult,omitempty"`
+	ForbiddenVersionsIncludesResult *GitlabPipelineIncludesForbiddenVersionResult `json:"forbiddenVersionsIncludesResult,omitempty"`
+	RequiredComponentsResult        *GitlabPipelineRequiredComponentsResult       `json:"requiredComponentsResult,omitempty"`
+	RequiredTemplatesResult         *GitlabPipelineRequiredTemplatesResult        `json:"requiredTemplatesResult,omitempty"`
 }
 
 // PipelineOriginMetricsSummary is a simplified version of origin metrics for output

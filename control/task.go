@@ -159,7 +159,43 @@ func RunAnalysis(conf *configuration.Configuration) (*AnalysisResult, error) {
 	authorizedSourcesResult := authorizedSourcesConf.Run(pipelineImageData)
 	result.ImageAuthorizedSourcesResult = authorizedSourcesResult
 
-	// 5. Run Branch Must Be Protected control (if enabled)
+	// 5. Run Pipeline Must Not Include Hardcoded Jobs control
+	l.Info("Running Pipeline Must Not Include Hardcoded Jobs control")
+
+	hardcodedJobsConf := &GitlabPipelineHardcodedJobsConf{}
+	if err := hardcodedJobsConf.GetConf(conf.PlumberConfig); err != nil {
+		l.WithError(err).Error("Failed to load HardcodedJobs config from .plumber.yaml file")
+		return result, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	hardcodedJobsResult := hardcodedJobsConf.Run(pipelineOriginData)
+	result.HardcodedJobsResult = hardcodedJobsResult
+
+	// 6. Run Includes Must Be Up To Date control
+	l.Info("Running Includes Must Be Up To Date control")
+
+	outdatedConf := &GitlabPipelineIncludesOutdatedConf{}
+	if err := outdatedConf.GetConf(conf.PlumberConfig); err != nil {
+		l.WithError(err).Error("Failed to load IncludesOutdated config from .plumber.yaml file")
+		return result, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	outdatedResult := outdatedConf.Run(pipelineOriginData)
+	result.OutdatedIncludesResult = outdatedResult
+
+	// 7. Run Includes Must Not Use Forbidden Versions control
+	l.Info("Running Includes Must Not Use Forbidden Versions control")
+
+	forbiddenVersionConf := &GitlabPipelineIncludesForbiddenVersionConf{}
+	if err := forbiddenVersionConf.GetConf(conf.PlumberConfig); err != nil {
+		l.WithError(err).Error("Failed to load ForbiddenVersions config from .plumber.yaml file")
+		return result, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	forbiddenVersionResult := forbiddenVersionConf.Run(pipelineOriginData, projectInfo.DefaultBranch)
+	result.ForbiddenVersionsIncludesResult = forbiddenVersionResult
+
+	// 8. Run Branch Must Be Protected control (if enabled)
 	branchProtectionConfig := conf.PlumberConfig.GetBranchMustBeProtectedConfig()
 	if branchProtectionConfig != nil && branchProtectionConfig.IsEnabled() {
 		l.Info("Running Branch Must Be Protected control")
@@ -185,6 +221,30 @@ func RunAnalysis(conf *configuration.Configuration) (*AnalysisResult, error) {
 	} else {
 		l.Debug("Branch Must Be Protected control is disabled or not configured")
 	}
+
+	// 9. Run Pipeline Must Include Component control
+	l.Info("Running Pipeline Must Include Component control")
+
+	requiredComponentsConf := &GitlabPipelineRequiredComponentsConf{}
+	if err := requiredComponentsConf.GetConf(conf.PlumberConfig); err != nil {
+		l.WithError(err).Error("Failed to load RequiredComponents config from .plumber.yaml file")
+		return result, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	requiredComponentsResult := requiredComponentsConf.Run(pipelineOriginData, conf.GitlabURL)
+	result.RequiredComponentsResult = requiredComponentsResult
+
+	// 10. Run Pipeline Must Include Template control
+	l.Info("Running Pipeline Must Include Template control")
+
+	requiredTemplatesConf := &GitlabPipelineRequiredTemplatesConf{}
+	if err := requiredTemplatesConf.GetConf(conf.PlumberConfig); err != nil {
+		l.WithError(err).Error("Failed to load RequiredTemplates config from .plumber.yaml file")
+		return result, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	requiredTemplatesResult := requiredTemplatesConf.Run(pipelineOriginData)
+	result.RequiredTemplatesResult = requiredTemplatesResult
 
 	l.WithFields(logrus.Fields{
 		"ciValid":   result.CiValid,

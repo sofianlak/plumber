@@ -27,6 +27,21 @@ type ControlsConfig struct {
 
 	// BranchMustBeProtected control configuration
 	BranchMustBeProtected *BranchProtectionControlConfig `yaml:"branchMustBeProtected,omitempty"`
+
+	// PipelineMustNotIncludeHardcodedJobs control configuration
+	PipelineMustNotIncludeHardcodedJobs *HardcodedJobsControlConfig `yaml:"pipelineMustNotIncludeHardcodedJobs,omitempty"`
+
+	// IncludesMustBeUpToDate control configuration
+	IncludesMustBeUpToDate *IncludesUpToDateControlConfig `yaml:"includesMustBeUpToDate,omitempty"`
+
+	// IncludesMustNotUseForbiddenVersions control configuration
+	IncludesMustNotUseForbiddenVersions *IncludesForbiddenVersionsControlConfig `yaml:"includesMustNotUseForbiddenVersions,omitempty"`
+
+	// PipelineMustIncludeComponent control configuration
+	PipelineMustIncludeComponent *RequiredComponentsControlConfig `yaml:"pipelineMustIncludeComponent,omitempty"`
+
+	// PipelineMustIncludeTemplate control configuration
+	PipelineMustIncludeTemplate *RequiredTemplatesControlConfig `yaml:"pipelineMustIncludeTemplate,omitempty"`
 }
 
 // ImageForbiddenTagsControlConfig configuration for the forbidden image tags control
@@ -72,6 +87,56 @@ type BranchProtectionControlConfig struct {
 
 	// MinPushAccessLevel minimum access level required to push (0=No one, 30=Developer, 40=Maintainer)
 	MinPushAccessLevel *int `yaml:"minPushAccessLevel,omitempty"`
+}
+
+// HardcodedJobsControlConfig configuration for the hardcoded jobs control
+type HardcodedJobsControlConfig struct {
+	// Enabled controls whether this check runs
+	Enabled *bool `yaml:"enabled,omitempty"`
+}
+
+// IncludesUpToDateControlConfig configuration for the includes up-to-date control
+type IncludesUpToDateControlConfig struct {
+	// Enabled controls whether this check runs
+	Enabled *bool `yaml:"enabled,omitempty"`
+}
+
+// IncludesForbiddenVersionsControlConfig configuration for the forbidden versions control
+type IncludesForbiddenVersionsControlConfig struct {
+	// Enabled controls whether this check runs
+	Enabled *bool `yaml:"enabled,omitempty"`
+
+	// ForbiddenVersions is a list of version patterns considered forbidden (e.g., latest, main, HEAD)
+	ForbiddenVersions []string `yaml:"forbiddenVersions,omitempty"`
+
+	// DefaultBranchIsForbiddenVersion when true, adds the project's default branch to forbidden versions
+	DefaultBranchIsForbiddenVersion *bool `yaml:"defaultBranchIsForbiddenVersion,omitempty"`
+}
+
+// RequiredComponentsControlConfig configuration for the required components control
+type RequiredComponentsControlConfig struct {
+	// Enabled controls whether this check runs
+	Enabled *bool `yaml:"enabled,omitempty"`
+
+	// RequiredGroups uses DNF (Disjunctive Normal Form) format:
+	// Outer array = OR (at least one group must be satisfied)
+	// Inner array = AND (all components in group must be present)
+	// Example: [["comp-a", "comp-b"], ["comp-c"]] means:
+	//   "must have (comp-a AND comp-b) OR (comp-c)"
+	RequiredGroups [][]string `yaml:"requiredGroups,omitempty"`
+}
+
+// RequiredTemplatesControlConfig configuration for the required templates control
+type RequiredTemplatesControlConfig struct {
+	// Enabled controls whether this check runs
+	Enabled *bool `yaml:"enabled,omitempty"`
+
+	// RequiredGroups uses DNF (Disjunctive Normal Form) format:
+	// Outer array = OR (at least one group must be satisfied)
+	// Inner array = AND (all templates in group must be present)
+	// Example: [["go", "helm"], ["go_helm_unified"]] means:
+	//   "must have (go AND helm) OR (go_helm_unified)"
+	RequiredGroups [][]string `yaml:"requiredGroups,omitempty"`
 }
 
 // LoadPlumberConfig loads configuration from a file path
@@ -155,6 +220,96 @@ func (c *PlumberConfig) GetBranchMustBeProtectedConfig() *BranchProtectionContro
 // IsEnabled returns whether the control is enabled
 // Returns false if not properly configured
 func (c *BranchProtectionControlConfig) IsEnabled() bool {
+	if c == nil || c.Enabled == nil {
+		return false
+	}
+	return *c.Enabled
+}
+
+// GetPipelineMustNotIncludeHardcodedJobsConfig returns the control configuration
+// Returns nil if not configured
+func (c *PlumberConfig) GetPipelineMustNotIncludeHardcodedJobsConfig() *HardcodedJobsControlConfig {
+	if c == nil {
+		return nil
+	}
+	return c.Controls.PipelineMustNotIncludeHardcodedJobs
+}
+
+// IsEnabled returns whether the control is enabled
+// Returns false if not properly configured
+func (c *HardcodedJobsControlConfig) IsEnabled() bool {
+	if c == nil || c.Enabled == nil {
+		return false
+	}
+	return *c.Enabled
+}
+
+// GetIncludesMustBeUpToDateConfig returns the control configuration
+// Returns nil if not configured
+func (c *PlumberConfig) GetIncludesMustBeUpToDateConfig() *IncludesUpToDateControlConfig {
+	if c == nil {
+		return nil
+	}
+	return c.Controls.IncludesMustBeUpToDate
+}
+
+// IsEnabled returns whether the control is enabled
+// Returns false if not properly configured
+func (c *IncludesUpToDateControlConfig) IsEnabled() bool {
+	if c == nil || c.Enabled == nil {
+		return false
+	}
+	return *c.Enabled
+}
+
+// GetIncludesMustNotUseForbiddenVersionsConfig returns the control configuration
+// Returns nil if not configured
+func (c *PlumberConfig) GetIncludesMustNotUseForbiddenVersionsConfig() *IncludesForbiddenVersionsControlConfig {
+	if c == nil {
+		return nil
+	}
+	return c.Controls.IncludesMustNotUseForbiddenVersions
+}
+
+// IsEnabled returns whether the control is enabled
+// Returns false if not properly configured
+func (c *IncludesForbiddenVersionsControlConfig) IsEnabled() bool {
+	if c == nil || c.Enabled == nil {
+		return false
+	}
+	return *c.Enabled
+}
+
+// GetPipelineMustIncludeComponentConfig returns the control configuration
+// Returns nil if not configured
+func (c *PlumberConfig) GetPipelineMustIncludeComponentConfig() *RequiredComponentsControlConfig {
+	if c == nil {
+		return nil
+	}
+	return c.Controls.PipelineMustIncludeComponent
+}
+
+// IsEnabled returns whether the control is enabled
+// Returns false if not properly configured
+func (c *RequiredComponentsControlConfig) IsEnabled() bool {
+	if c == nil || c.Enabled == nil {
+		return false
+	}
+	return *c.Enabled
+}
+
+// GetPipelineMustIncludeTemplateConfig returns the control configuration
+// Returns nil if not configured
+func (c *PlumberConfig) GetPipelineMustIncludeTemplateConfig() *RequiredTemplatesControlConfig {
+	if c == nil {
+		return nil
+	}
+	return c.Controls.PipelineMustIncludeTemplate
+}
+
+// IsEnabled returns whether the control is enabled
+// Returns false if not properly configured
+func (c *RequiredTemplatesControlConfig) IsEnabled() bool {
 	if c == nil || c.Enabled == nil {
 		return false
 	}
