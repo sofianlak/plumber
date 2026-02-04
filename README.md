@@ -42,6 +42,10 @@ Plumber is a compliance scanner for GitLab. It reads your `.gitlab-ci.yml` and r
   <img src="assets/component.gif" alt="Plumber Demo" width="700">
 </p>
 
+> 💡 **Want to see it in action?** Check out our example projects:
+> - [go-build-test-compliant](https://gitlab.com/getplumber/examples/go-build-test-compliant/-/pipelines) - A compliant project passing all checks
+> - [go-build-test-non-compliant](https://gitlab.com/getplumber/examples/go-build-test-non-compliant/-/pipelines) - A non-compliant project showing detected issues
+
 ## 🚀 Two Ways to Use Plumber
 
 Choose **one** of these methods. You don't need both:
@@ -365,7 +369,7 @@ Uses DNF (Disjunctive Normal Form) logic for requirements.
 pipelineMustIncludeTemplate:
   enabled: false  # Disabled by default - enable and configure for your org
   # DNF format: outer array = OR, inner array = AND
-  # Example: must have (go AND trivy AND iso27001)
+  # Example: must have (go AND trivy AND iso27001) OR (full-go-pipeline)
   requiredGroups: []
     # - ["templates/go/go", "templates/trivy/trivy", "templates/iso27001/iso27001"]
     # - ["templates/full-go-pipeline"]

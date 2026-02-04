@@ -172,49 +172,46 @@ controls:
     defaultBranchIsForbiddenVersion: false
 
   # ============================================================================
-  # Pipeline Must Include Component
+  # Pipeline must include component
   # ============================================================================
-  # This control verifies that the CI pipeline includes required GitLab CI/CD
-  # components. It helps enforce organizational standards by ensuring pipelines
-  # include mandatory security, compliance, or utility components.
+  # Ensures pipelines include required GitLab CI/CD components.
+  # Useful for enforcing security scanning, compliance, or utility components.
   #
-  # The control uses DNF (Disjunctive Normal Form) logic for requirements:
-  # - Outer array = OR (at least one group must be satisfied)
-  # - Inner array = AND (all components in group must be present)
+  # Requirements use "OR of ANDs" logic:
+  #   - Each inner array = components that must ALL be present (AND)
+  #   - Outer array = only ONE group needs to be satisfied (OR)
   #
-  # Example: [["security-scan", "sast"], ["full-pipeline"]] means:
-  #   "must have (security-scan AND sast) OR (full-pipeline)"
+  # Example: [["sast", "secret-detection", "plumber"], ["full-security"]]
+  #   Passes if: (sast AND secret-detection AND plumber) OR (full-security)
+  #
   pipelineMustIncludeComponent:
-    # Set to true to enable this control
-    enabled: false
+    enabled: false  # Enable and configure requiredGroups for your org
 
-    # Required component groups (DNF format)
-    # Specify component paths without version (e.g., "group/project/component-name")
+    # Component paths without version (e.g., "group/project/component-name")
     requiredGroups: []
-      # Example configuration:
-      # - ["components/secret-detection/secret-detection", "components/sast/sast"]
-      # - ["your-org/full-security-pipeline"]
+      # Example - require all three security components:
+      # - ["components/secret-detection/secret-detection", "components/sast/sast", "getplumber/plumber/plumber"]
+      #
+      # Example - require EITHER (sast + secret-detection + plumber) OR (full-security):
+      # - ["components/sast/sast", "components/secret-detection/secret-detection"]
+      # - ["your-org/full-security-pipeline/full-security"]
 
   # ============================================================================
-  # Pipeline Must Include Template
+  # Pipeline must include template
   # ============================================================================
-  # This control verifies that the CI pipeline includes required templates
-  # (project includes). It helps enforce organizational standards by ensuring
-  # pipelines include mandatory templates for security, compliance, or workflows.
+  # Ensures pipelines include required templates (project file includes).
+  # Useful for enforcing organization-specific CI templates.
   #
-  # The control uses DNF (Disjunctive Normal Form) logic for requirements:
-  # - Outer array = OR (at least one group must be satisfied)
-  # - Inner array = AND (all templates in group must be present)
+  # Requirements use "OR of ANDs" logic (same as components above).
   #
-  # Example: [["templates/go/go", "templates/trivy/trivy"], ["templates/full-pipeline"]] means:
-  #   "must have (go AND trivy) OR (full-pipeline)"
   pipelineMustIncludeTemplate:
-    # Set to true to enable this control
-    enabled: false
+    enabled: false  # Enable and configure requiredGroups for your org
 
-    # Required template groups (DNF format)
-    # Specify template paths (e.g., "templates/go/go" or your org's template paths)
+    # Template paths as they appear in your include statements
     requiredGroups: []
-      # Example configuration:
+      # Example - require all three templates:
       # - ["templates/go/go", "templates/trivy/trivy", "templates/iso27001/iso27001"]
+      #
+      # Example - require EITHER (go + trivy) OR (full-go-pipeline):
+      # - ["templates/go/go", "templates/trivy/trivy"]
       # - ["templates/full-go-pipeline"]
