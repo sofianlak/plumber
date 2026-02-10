@@ -345,16 +345,31 @@ includesMustNotUseForbiddenVersions:
 <summary><b>7. Pipeline must include component</b></summary>
 
 Ensures required GitLab CI/CD components are included in the pipeline.
-Uses DNF (Disjunctive Normal Form) logic for requirements.
+
+There are two ways to define requirements (use one, not both):
+
+**Expression syntax** — a natural boolean expression using `AND`, `OR`, and parentheses:
 
 ```yaml
 pipelineMustIncludeComponent:
-  enabled: false  # Disabled by default - enable and configure for your org
-  # DNF format: outer array = OR, inner array = AND
-  # Example: must have (secret-detection AND sast) OR (full-security-pipeline)
-  requiredGroups: []
-    # - ["components/secret-detection/secret-detection", "components/sast/sast"]
-    # - ["your-org/full-security-pipeline"]
+  enabled: true
+  # AND binds tighter than OR, so "a AND b OR c" means "(a AND b) OR c"
+  required: components/sast/sast AND components/secret-detection/secret-detection
+
+  # With alternatives:
+  # required: (components/sast/sast AND components/secret-detection/secret-detection) OR your-org/full-security/full-security
+```
+
+**Array syntax** — a list of groups using "OR of ANDs" logic:
+
+```yaml
+pipelineMustIncludeComponent:
+  enabled: true
+  # Outer array = OR (at least one group must be satisfied)
+  # Inner array = AND (all components in group must be present)
+  requiredGroups:
+    - ["components/sast/sast", "components/secret-detection/secret-detection"]
+    - ["your-org/full-security/full-security"]
 ```
 
 </details>
@@ -363,16 +378,28 @@ pipelineMustIncludeComponent:
 <summary><b>8. Pipeline must include template</b></summary>
 
 Ensures required templates (project includes) are present in the pipeline.
-Uses DNF (Disjunctive Normal Form) logic for requirements.
+
+There are two ways to define requirements (use one, not both):
+
+**Expression syntax** — a natural boolean expression using `AND`, `OR`, and parentheses:
 
 ```yaml
 pipelineMustIncludeTemplate:
-  enabled: false  # Disabled by default - enable and configure for your org
-  # DNF format: outer array = OR, inner array = AND
-  # Example: must have (go AND trivy AND iso27001) OR (full-go-pipeline)
-  requiredGroups: []
-    # - ["templates/go/go", "templates/trivy/trivy", "templates/iso27001/iso27001"]
-    # - ["templates/full-go-pipeline"]
+  enabled: true
+  required: templates/go/go AND templates/trivy/trivy AND templates/iso27001/iso27001
+
+  # With alternatives:
+  # required: (templates/go/go AND templates/trivy/trivy) OR templates/full-go-pipeline
+```
+
+**Array syntax** — a list of groups using "OR of ANDs" logic:
+
+```yaml
+pipelineMustIncludeTemplate:
+  enabled: true
+  requiredGroups:
+    - ["templates/go/go", "templates/trivy/trivy", "templates/iso27001/iso27001"]
+    - ["templates/full-go-pipeline"]
 ```
 
 </details>

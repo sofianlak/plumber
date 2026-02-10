@@ -118,12 +118,46 @@ type RequiredComponentsControlConfig struct {
 	// Enabled controls whether this check runs
 	Enabled *bool `yaml:"enabled,omitempty"`
 
+	// Required is a human-readable boolean expression defining required components.
+	// Supports AND, OR operators and parentheses for grouping.
+	// AND has higher precedence than OR.
+	//
+	// Examples:
+	//   "components/sast/sast AND components/secret-detection/secret-detection"
+	//   "(components/sast/sast AND components/secret-detection/secret-detection) OR your-org/full-security/full-security"
+	Required string `yaml:"required,omitempty"`
+
 	// RequiredGroups uses DNF (Disjunctive Normal Form) format:
 	// Outer array = OR (at least one group must be satisfied)
 	// Inner array = AND (all components in group must be present)
 	// Example: [["comp-a", "comp-b"], ["comp-c"]] means:
 	//   "must have (comp-a AND comp-b) OR (comp-c)"
+	//
+	// Cannot be used together with 'required'.
 	RequiredGroups [][]string `yaml:"requiredGroups,omitempty"`
+}
+
+// GetResolvedRequiredGroups returns the effective required groups by resolving
+// either the 'required' expression or the 'requiredGroups' field.
+// Returns an error if both are set or if the expression is invalid.
+func (c *RequiredComponentsControlConfig) GetResolvedRequiredGroups() ([][]string, error) {
+	if c == nil {
+		return nil, nil
+	}
+	hasExpression := c.Required != ""
+	hasGroups := len(c.RequiredGroups) > 0
+
+	if hasExpression && hasGroups {
+		return nil, fmt.Errorf("pipelineMustIncludeComponent: cannot use both 'required' and 'requiredGroups' — use only one")
+	}
+	if hasExpression {
+		groups, err := ParseRequiredExpression(c.Required)
+		if err != nil {
+			return nil, fmt.Errorf("pipelineMustIncludeComponent: %w", err)
+		}
+		return groups, nil
+	}
+	return c.RequiredGroups, nil
 }
 
 // RequiredTemplatesControlConfig configuration for the required templates control
@@ -131,12 +165,46 @@ type RequiredTemplatesControlConfig struct {
 	// Enabled controls whether this check runs
 	Enabled *bool `yaml:"enabled,omitempty"`
 
+	// Required is a human-readable boolean expression defining required templates.
+	// Supports AND, OR operators and parentheses for grouping.
+	// AND has higher precedence than OR.
+	//
+	// Examples:
+	//   "templates/go/go AND templates/trivy/trivy"
+	//   "(templates/go/go AND templates/trivy/trivy) OR templates/full-go-pipeline"
+	Required string `yaml:"required,omitempty"`
+
 	// RequiredGroups uses DNF (Disjunctive Normal Form) format:
 	// Outer array = OR (at least one group must be satisfied)
 	// Inner array = AND (all templates in group must be present)
 	// Example: [["go", "helm"], ["go_helm_unified"]] means:
 	//   "must have (go AND helm) OR (go_helm_unified)"
+	//
+	// Cannot be used together with 'required'.
 	RequiredGroups [][]string `yaml:"requiredGroups,omitempty"`
+}
+
+// GetResolvedRequiredGroups returns the effective required groups by resolving
+// either the 'required' expression or the 'requiredGroups' field.
+// Returns an error if both are set or if the expression is invalid.
+func (c *RequiredTemplatesControlConfig) GetResolvedRequiredGroups() ([][]string, error) {
+	if c == nil {
+		return nil, nil
+	}
+	hasExpression := c.Required != ""
+	hasGroups := len(c.RequiredGroups) > 0
+
+	if hasExpression && hasGroups {
+		return nil, fmt.Errorf("pipelineMustIncludeTemplate: cannot use both 'required' and 'requiredGroups' — use only one")
+	}
+	if hasExpression {
+		groups, err := ParseRequiredExpression(c.Required)
+		if err != nil {
+			return nil, fmt.Errorf("pipelineMustIncludeTemplate: %w", err)
+		}
+		return groups, nil
+	}
+	return c.RequiredGroups, nil
 }
 
 // LoadPlumberConfig loads configuration from a file path
@@ -168,8 +236,37 @@ func LoadPlumberConfig(configPath string) (*PlumberConfig, string, error) {
 		return nil, configPath, err
 	}
 
+	// Validate expression fields early to catch syntax errors at load time
+	if err := config.validate(); err != nil {
+		return nil, configPath, fmt.Errorf("configuration validation error: %w", err)
+	}
+
 	l.WithField("config", config).Debug("Configuration loaded successfully")
 	return config, configPath, nil
+}
+
+// validate checks for configuration errors, including expression syntax
+// and mutual exclusivity of 'required' vs 'requiredGroups'.
+func (c *PlumberConfig) validate() error {
+	if c == nil {
+		return nil
+	}
+
+	// Validate pipelineMustIncludeComponent
+	if comp := c.Controls.PipelineMustIncludeComponent; comp != nil {
+		if _, err := comp.GetResolvedRequiredGroups(); err != nil {
+			return err
+		}
+	}
+
+	// Validate pipelineMustIncludeTemplate
+	if tmpl := c.Controls.PipelineMustIncludeTemplate; tmpl != nil {
+		if _, err := tmpl.GetResolvedRequiredGroups(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // GetContainerImageMustNotUseForbiddenTagsConfig returns the control configuration

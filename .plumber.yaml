@@ -177,24 +177,28 @@ controls:
   # Ensures pipelines include required GitLab CI/CD components.
   # Useful for enforcing security scanning, compliance, or utility components.
   #
-  # Requirements use "OR of ANDs" logic:
-  #   - Each inner array = components that must ALL be present (AND)
-  #   - Outer array = only ONE group needs to be satisfied (OR)
+  # Two ways to define requirements (use one, not both):
   #
-  # Example: [["sast", "secret-detection", "plumber"], ["full-security"]]
-  #   Passes if: (sast AND secret-detection AND plumber) OR (full-security)
+  # Option 1 — Expression syntax ('required'):
+  #   A natural boolean expression using AND, OR, and parentheses.
+  #   AND binds tighter than OR, so "a AND b OR c" means "(a AND b) OR c".
+  #
+  #   required: components/sast/sast AND components/secret-detection/secret-detection
+  #   required: (components/sast/sast AND components/secret-detection/secret-detection) OR your-org/full-security/full-security
+  #
+  # Option 2 — Array syntax ('requiredGroups'):
+  #   A list of groups using "OR of ANDs" logic:
+  #     - Each inner array = components that must ALL be present (AND)
+  #     - Outer array = only ONE group needs to be satisfied (OR)
+  #
+  #   requiredGroups:
+  #     - ["components/sast/sast", "components/secret-detection/secret-detection"]
+  #     - ["your-org/full-security-pipeline/full-security"]
   #
   pipelineMustIncludeComponent:
-    enabled: false  # Enable and configure requiredGroups for your org
-
-    # Component paths without version (e.g., "group/project/component-name")
+    enabled: false
+    # required: components/sast/sast AND components/secret-detection/secret-detection AND getplumber/plumber/plumber
     requiredGroups: []
-      # Example - require all three security components:
-      # - ["components/secret-detection/secret-detection", "components/sast/sast", "getplumber/plumber/plumber"]
-      #
-      # Example - require EITHER (sast + secret-detection + plumber) OR (full-security):
-      # - ["components/sast/sast", "components/secret-detection/secret-detection"]
-      # - ["your-org/full-security-pipeline/full-security"]
 
   # ============================================================================
   # Pipeline must include template
@@ -202,16 +206,18 @@ controls:
   # Ensures pipelines include required templates (project file includes).
   # Useful for enforcing organization-specific CI templates.
   #
-  # Requirements use "OR of ANDs" logic (same as components above).
+  # Two ways to define requirements (use one, not both):
+  #
+  # Option 1 — Expression syntax ('required'):
+  #   required: templates/go/go AND templates/trivy/trivy
+  #   required: (templates/go/go AND templates/trivy/trivy) OR templates/full-go-pipeline
+  #
+  # Option 2 — Array syntax ('requiredGroups'):
+  #   requiredGroups:
+  #     - ["templates/go/go", "templates/trivy/trivy"]
+  #     - ["templates/full-go-pipeline"]
   #
   pipelineMustIncludeTemplate:
-    enabled: false  # Enable and configure requiredGroups for your org
-
-    # Template paths as they appear in your include statements
+    enabled: false
+    # required: templates/go/go AND templates/trivy/trivy AND templates/iso27001/iso27001
     requiredGroups: []
-      # Example - require all three templates:
-      # - ["templates/go/go", "templates/trivy/trivy", "templates/iso27001/iso27001"]
-      #
-      # Example - require EITHER (go + trivy) OR (full-go-pipeline):
-      # - ["templates/go/go", "templates/trivy/trivy"]
-      # - ["templates/full-go-pipeline"]

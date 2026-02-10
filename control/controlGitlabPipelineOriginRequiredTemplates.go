@@ -41,11 +41,18 @@ func (p *GitlabPipelineRequiredTemplatesConf) GetConf(plumberConfig *configurati
 	}
 
 	p.Enabled = config.IsEnabled()
-	p.RequiredGroups = config.RequiredGroups
+
+	// Resolve required groups from either 'required' expression or legacy 'requiredGroups'
+	groups, err := config.GetResolvedRequiredGroups()
+	if err != nil {
+		return err
+	}
+	p.RequiredGroups = groups
 
 	l.WithFields(logrus.Fields{
 		"enabled":        p.Enabled,
 		"requiredGroups": p.RequiredGroups,
+		"hasExpression":  config.Required != "",
 	}).Debug("pipelineMustIncludeTemplate control configuration loaded from .plumber.yaml file")
 
 	return nil
