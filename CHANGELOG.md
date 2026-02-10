@@ -1,3 +1,10 @@
+## [0.1.33](https://github.com/getplumber/plumber/compare/v0.1.32...v0.1.33) (2026-02-10)
+
+
+### 🐛 Bug Fixes
+
+* **branch:** use correct SHA for ciConfig query when --branch is specified ([1729084](https://github.com/getplumber/plumber/commit/1729084509de141d282e3a3d49c62fe7864e385e))
+
 ## [0.1.32](https://github.com/getplumber/plumber/compare/v0.1.31...v0.1.32) (2026-02-04)
 
 
