@@ -195,6 +195,8 @@ controls:
   #     - ["components/sast/sast", "components/secret-detection/secret-detection"]
   #     - ["your-org/full-security-pipeline/full-security"]
   #
+  # For more expression examples, see https://github.com/getplumber/plumber/blob/main/configuration/expression_test.go
+  #
   pipelineMustIncludeComponent:
     enabled: false
     # required: components/sast/sast AND components/secret-detection/secret-detection AND getplumber/plumber/plumber
@@ -216,6 +218,8 @@ controls:
   #   requiredGroups:
   #     - ["templates/go/go", "templates/trivy/trivy"]
   #     - ["templates/full-go-pipeline"]
+  #
+  # For more expression examples, see https://github.com/getplumber/plumber/blob/main/configuration/expression_test.go
   #
   pipelineMustIncludeTemplate:
     enabled: false
