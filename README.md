@@ -236,7 +236,7 @@ This creates `.plumber.yaml` with sensible [defaults](./.plumber.yaml). Customiz
 
 ### Available Controls
 
-Plumber includes 8 compliance controls. Each can be enabled/disabled and customized in [.plumber.yaml](.plumber.yaml):
+Plumber includes 9 compliance controls. Each can be enabled/disabled and customized in [.plumber.yaml](.plumber.yaml):
 
 <details>
 <summary><b>1. Container images must not use forbidden tags</b></summary>
@@ -258,7 +258,19 @@ containerImageMustNotUseForbiddenTags:
 </details>
 
 <details>
-<summary><b>2. Container images must come from authorized sources</b></summary>
+<summary><b>2. Container images must be pinned by digest</b></summary>
+
+Prevents use of mutable image references and enforces immutable digest references.
+
+```yaml
+containerImagesMustBePinnedByDigest:
+  enabled: true
+```
+
+</details>
+
+<details>
+<summary><b>3. Container images must come from authorized sources</b></summary>
 
 Ensures container images come from trusted registries only.
 
@@ -279,7 +291,7 @@ containerImageMustComeFromAuthorizedSources:
 </details>
 
 <details>
-<summary><b>3. Branch must be protected</b></summary>
+<summary><b>4. Branch must be protected</b></summary>
 
 Verifies that critical branches have proper protection settings.
 
@@ -302,7 +314,7 @@ branchMustBeProtected:
 </details>
 
 <details>
-<summary><b>4. Pipeline must not include hardcoded jobs</b></summary>
+<summary><b>5. Pipeline must not include hardcoded jobs</b></summary>
 
 Detects jobs defined directly in `.gitlab-ci.yml` instead of coming from includes/components.
 
@@ -314,7 +326,7 @@ pipelineMustNotIncludeHardcodedJobs:
 </details>
 
 <details>
-<summary><b>5. Includes must be up to date</b></summary>
+<summary><b>6. Includes must be up to date</b></summary>
 
 Checks if included templates/components have newer versions available.
 
@@ -326,7 +338,7 @@ includesMustBeUpToDate:
 </details>
 
 <details>
-<summary><b>6. Includes must not use forbidden versions</b></summary>
+<summary><b>7. Includes must not use forbidden versions</b></summary>
 
 Prevents use of mutable version references for includes that can change unexpectedly.
 
@@ -345,7 +357,7 @@ includesMustNotUseForbiddenVersions:
 </details>
 
 <details>
-<summary><b>7. Pipeline must include component</b></summary>
+<summary><b>8. Pipeline must include component</b></summary>
 
 Ensures required GitLab CI/CD components are included in the pipeline.
 
@@ -378,7 +390,7 @@ pipelineMustIncludeComponent:
 </details>
 
 <details>
-<summary><b>8. Pipeline must include template</b></summary>
+<summary><b>9. Pipeline must include template</b></summary>
 
 Ensures required templates (project includes) are present in the pipeline.
 

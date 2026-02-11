@@ -36,6 +36,18 @@ controls:
       # - unstable
 
   # ===========================================
+  # Container images must be pinned by digest
+  # ===========================================
+  # Detects CI/CD jobs using container images referenced by mutable tags
+  # (e.g., alpine:3.19, node:20) instead of immutable digests.
+  #
+  # Best practice: Use image references pinned by digest
+  # (e.g., alpine@sha256:..., node@sha256:...)
+  containerImagesMustBePinnedByDigest:
+    # Set to false to disable this control
+    enabled: true
+
+  # ===========================================
   # Container images must come from authorized sources
   # ===========================================
   # Detects CI/CD jobs using Docker images from untrusted registries.

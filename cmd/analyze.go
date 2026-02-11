@@ -38,6 +38,7 @@ configuration, and runs various checks including:
 - Pipeline origin analysis (components, templates, local files)
 - Pipeline image analysis (registries, tags)
 - Mutable image tag detection
+- Image digest pinning enforcement
 
 Required environment variables:
   GITLAB_TOKEN    GitLab API token (required)
@@ -217,6 +218,11 @@ func runAnalyze(cmd *cobra.Command, args []string) error {
 
 	if result.RequiredTemplatesResult != nil && !result.RequiredTemplatesResult.Skipped {
 		complianceSum += result.RequiredTemplatesResult.Compliance
+		controlCount++
+	}
+
+	if result.ImagePinnedByDigestResult != nil && !result.ImagePinnedByDigestResult.Skipped {
+		complianceSum += result.ImagePinnedByDigestResult.Compliance
 		controlCount++
 	}
 
@@ -645,6 +651,35 @@ func outputText(result *control.AnalysisResult, threshold, compliance float64, c
 				fmt.Printf("\n  %sMissing Templates:%s\n", colorYellow, colorReset)
 				for _, issue := range result.RequiredTemplatesResult.Issues {
 					fmt.Printf("    %s•%s %s (group %d)\n", colorYellow, colorReset, issue.TemplatePath, issue.GroupIndex+1)
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	// Control 9: Container images must be pinned by digest
+	if result.ImagePinnedByDigestResult != nil {
+		ctrl := controlSummary{
+			name:       "Container images must be pinned by digest",
+			compliance: result.ImagePinnedByDigestResult.Compliance,
+			issues:     len(result.ImagePinnedByDigestResult.Issues),
+			skipped:    result.ImagePinnedByDigestResult.Skipped,
+		}
+		controls = append(controls, ctrl)
+
+		printControlHeader("Container images must be pinned by digest", result.ImagePinnedByDigestResult.Compliance, result.ImagePinnedByDigestResult.Skipped)
+
+		if result.ImagePinnedByDigestResult.Skipped {
+			fmt.Printf("  %sStatus: SKIPPED (disabled in configuration)%s\n", colorDim, colorReset)
+		} else {
+			fmt.Printf("  Total Images: %d\n", result.ImagePinnedByDigestResult.Metrics.Total)
+			fmt.Printf("  Pinned By Digest: %d\n", result.ImagePinnedByDigestResult.Metrics.PinnedByDigest)
+			fmt.Printf("  Not Pinned By Digest: %d\n", result.ImagePinnedByDigestResult.Metrics.NotPinnedByDigest)
+
+			if len(result.ImagePinnedByDigestResult.Issues) > 0 {
+				fmt.Printf("\n  %sImages Not Pinned By Digest Found:%s\n", colorYellow, colorReset)
+				for _, issue := range result.ImagePinnedByDigestResult.Issues {
+					fmt.Printf("    %s•%s Job '%s' uses image without digest pinning: %s\n", colorYellow, colorReset, issue.Job, issue.Link)
 				}
 			}
 		}

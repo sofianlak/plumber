@@ -64,6 +64,7 @@ customize for your organization's compliance requirements.
 
 The generated config includes:
 - Container image tag policies (forbid 'latest', 'dev', etc.)
+- Container image digest pinning policy
 - Trusted registry whitelist
 - Branch protection requirements
 

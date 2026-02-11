@@ -264,6 +264,18 @@ func RunAnalysis(conf *configuration.Configuration) (*AnalysisResult, error) {
 	requiredTemplatesResult := requiredTemplatesConf.Run(pipelineOriginData)
 	result.RequiredTemplatesResult = requiredTemplatesResult
 
+	// 11. Run Image Pinned By Digest control
+	l.Info("Running Image Pinned By Digest control")
+
+	pinnedByDigestConf := &GitlabImagePinnedByDigestConf{}
+	if err := pinnedByDigestConf.GetConf(conf.PlumberConfig); err != nil {
+		l.WithError(err).Error("Failed to load ImagePinnedByDigest config from .plumber.yaml file")
+		return result, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	pinnedByDigestResult := pinnedByDigestConf.Run(pipelineImageData)
+	result.ImagePinnedByDigestResult = pinnedByDigestResult
+
 	l.WithFields(logrus.Fields{
 		"ciValid":   result.CiValid,
 		"ciMissing": result.CiMissing,
