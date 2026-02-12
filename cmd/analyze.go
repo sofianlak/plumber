@@ -155,6 +155,11 @@ func runAnalyze(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("configuration error: %w", err)
 	}
 
+	// Print banner if output is enabled
+	if printOutput {
+		printBanner()
+	}
+
 	fmt.Fprintf(os.Stderr, "Using configuration: %s\n", configPath)
 
 	// Create configuration
@@ -389,6 +394,20 @@ type controlSummary struct {
 	compliance float64
 	issues     int
 	skipped    bool
+}
+
+func printBanner() {
+	fmt.Printf("\n")
+	fmt.Printf("%s", colorCyan)
+	fmt.Printf("  ██████╗ ██╗     ██╗   ██╗ ███╗   ███╗ ██████╗ ███████╗██████╗ \n")
+	fmt.Printf("  ██╔══██╗██║     ██║   ██║ ████╗ ████║██╔══██╗██╔════╝██╔══██╗\n")
+	fmt.Printf("  ██████╔╝██║     ██║   ██║ ██╔████╔██║██████╔╝█████╗  ██████╔╝\n")
+	fmt.Printf("  ██╔═══╝ ██║     ██║   ██║ ██║╚██╔╝██║██╔══██╗██╔══╝  ██╔══██╗\n")
+	fmt.Printf("  ██║     ███████╗╚██████╔╝ ██║ ╚═╝ ██║██████╔╝███████╗██║  ██║\n")
+	fmt.Printf("  ╚═╝     ╚══════╝ ╚═════╝  ╚═╝     ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝\n")
+	fmt.Printf("%s", colorReset)
+	fmt.Printf("  %sCI/CD Compliance Scanner for GitLab Pipelines%s\n", colorBold, colorReset)
+	fmt.Printf("  %sJoin our community: %shttps://getplumber.io/discord%s\n\n", colorDim, colorCyan, colorReset)
 }
 
 func outputText(result *control.AnalysisResult, threshold, compliance float64, controlCount int) error {
