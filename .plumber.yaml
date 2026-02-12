@@ -1,6 +1,8 @@
 # Plumber Configuration - Trust Policy Manager for GitLab CI/CD
 # This file is required for 'plumber analyze' to work.
 # Default file name: .plumber.yaml
+# Reference: https://github.com/getplumber/plumber/blob/main/.plumber.yaml
+# Can be generated with: plumber config generate
 
 version: "1.0"
 

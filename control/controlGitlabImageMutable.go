@@ -21,17 +21,21 @@ type GitlabImageForbiddenTagsConf struct {
 }
 
 // GetConf loads configuration from PlumberConfig
-// Returns error if config is missing or incomplete
+// If config is nil or the control section is missing, the control is disabled (skipped).
 func (p *GitlabImageForbiddenTagsConf) GetConf(plumberConfig *configuration.PlumberConfig) error {
 	// Plumber config is required
 	if plumberConfig == nil {
-		return fmt.Errorf("Plumber config is required but not provided")
+		p.Enabled = false
+		return nil
 	}
 
 	// Get control config from PlumberConfig
 	imgConfig := plumberConfig.GetContainerImageMustNotUseForbiddenTagsConfig()
 	if imgConfig == nil {
-		return fmt.Errorf("containerImageMustNotUseForbiddenTags control configuration is missing from .plumber.yaml config file")
+		// Control not configured - disable it
+		l.Debug("containerImageMustNotUseForbiddenTags control configuration is missing from .plumber.yaml file, skipping")
+		p.Enabled = false
+		return nil
 	}
 
 	// Check if enabled field is set
