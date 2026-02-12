@@ -1,3 +1,10 @@
+## [0.1.40](https://github.com/getplumber/plumber/compare/v0.1.39...v0.1.40) (2026-02-12)
+
+
+### ✨ Features
+
+* **UX:** Integrate the control pinned by digest inside the immutable one ([87bd450](https://github.com/getplumber/plumber/commit/87bd45074c7d0710f67dfe23e486421eda1baf39))
+
 ## [0.1.39](https://github.com/getplumber/plumber/compare/v0.1.38...v0.1.39) (2026-02-12)
 
 
