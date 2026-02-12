@@ -1,3 +1,10 @@
+## [0.1.39](https://github.com/getplumber/plumber/compare/v0.1.38...v0.1.39) (2026-02-12)
+
+
+### ✨ Features
+
+* **UX:** If a control is misisng from .plumber.yaml simply skip it instead of returning an error ([3eec388](https://github.com/getplumber/plumber/commit/3eec388d75d0e28792c580dc95c79f89663af5e3))
+
 ## [0.1.38](https://github.com/getplumber/plumber/compare/v0.1.37...v0.1.38) (2026-02-12)
 
 
