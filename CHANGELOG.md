@@ -1,3 +1,15 @@
+## [0.1.38](https://github.com/getplumber/plumber/compare/v0.1.37...v0.1.38) (2026-02-12)
+
+
+### ✨ Features
+
+* **controls:** add image digest pinning control ([ea538a9](https://github.com/getplumber/plumber/commit/ea538a954def56d4695b0d766f3bb1aff8ee7bbd))
+
+
+### 🐛 Bug Fixes
+
+* **control:** Disable sha pin by default and update readme ([1d24837](https://github.com/getplumber/plumber/commit/1d2483747880d2f6f53b87b64064975bffb313e1))
+
 ## [0.1.37](https://github.com/getplumber/plumber/compare/v0.1.36...v0.1.37) (2026-02-11)
 
 
