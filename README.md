@@ -60,9 +60,14 @@ Choose **one** of these methods. You don't need both:
 - [GitLab CI Component](#option-2-gitlab-ci-component)
 - [Configuration](#%EF%B8%8F-configuration)
   - [Available Controls](#available-controls)
-  - [Outputs](#outputs)
-    - [Pipeline Bill of Materials (PBOM) & CycloneDX](#pipeline-bill-of-materials-pbom--cyclonedx)
-    - [Example Output](#example-output)
+- [Artifacts & Outputs](#-artifacts--outputs)
+  - [JSON Report](#json-report)
+  - [Pipeline Bill of Materials (PBOM)](#pipeline-bill-of-materials-pbom)
+  - [CycloneDX SBOM](#cyclonedx-sbom)
+  - [Terminal Output](#terminal-output)
+- [GitLab Integration](#-gitlab-integration)
+  - [Merge Request Comments](#merge-request-comments)
+  - [Project Badges](#project-badges)
 - [Installation](#-installation)
 - [CLI Reference](#-cli-reference)
 - [Self-Hosted GitLab](#%EF%B8%8F-self-hosted-gitlab)
@@ -427,33 +432,61 @@ pipelineMustIncludeTemplate:
 
 </details>
 
-### Outputs
+---
 
-By default, Plumber [prints a colorized](#example-output) detail and a summary of a project's compliance
-* You can disable the printing via the config flags
+## 📊 Artifacts & Outputs
 
-You can also configure Plumber to output a json file with the results.
-* This is enabled by default if using Plumber Component in Gitlab
+Plumber generates multiple output formats to fit different workflows. All artifacts are available via CLI flags and are automatically configured when using the GitLab CI component.
 
-#### Pipeline Bill of Materials (PBOM) & CycloneDX
+| Format | CLI Flag | CLI Default | Component Default | Description |
+|--------|----------|-------------|-------------------|-------------|
+| **Terminal** | `--print` | `true` | `true` | Colorized compliance report |
+| **JSON Report** | `--output` | — | `plumber-report.json` | Machine-readable analysis results |
+| **PBOM** | `--pbom` | — | `plumber-pbom.json` | Pipeline Bill of Materials |
+| **CycloneDX** | `--pbom-cyclonedx` | — | `plumber-cyclonedx-sbom.json` | Standard SBOM format |
 
-Plumber can generate a **PBOM**: a complete inventory of all dependencies in your CI/CD pipeline (container images, components, templates, includes). Two formats are available:
+### JSON Report
+
+Export the full analysis results in JSON format for CI integration, dashboards, or further processing:
 
 ```bash
-# Native PBOM format (detailed, pipeline-specific)
-plumber analyze --pbom pbom.json
+plumber analyze --output plumber-report.json
+```
 
-# CycloneDX SBOM format (standard, for security tool integration)
+The JSON includes all control results, compliance scores, issues found, and project metadata.
+
+### Pipeline Bill of Materials (PBOM)
+
+Generate a complete inventory of all dependencies in your CI/CD pipeline:
+
+```bash
+plumber analyze --pbom pbom.json
+```
+
+The PBOM includes:
+- **Container images** with registry, tag, and digest information
+- **CI/CD components** with version and source
+- **Templates** and includes with version tracking
+- **Compliance status** for each dependency
+
+### CycloneDX SBOM
+
+Generate a standards-compliant SBOM for security tool integration:
+
+```bash
 plumber analyze --pbom-cyclonedx pipeline-sbom.json
 ```
 
-The CycloneDX output follows the [CycloneDX 1.5 specification](https://cyclonedx.org/docs/1.5/json/) and is compatible with tools like Grype, Trivy, and Dependency-Track. When using the GitLab CI component, the CycloneDX file is automatically uploaded as a [GitLab CycloneDX report](https://docs.gitlab.com/ci/yaml/artifacts_reports/#artifactsreportscyclonedx).
+The CycloneDX output follows the [CycloneDX 1.5 specification](https://cyclonedx.org/docs/1.5/json/) and is compatible with:
+- **Grype** and **Trivy** for vulnerability scanning
+- **Dependency-Track** for continuous monitoring
+- **GitLab Dependency Scanning** (auto-uploaded when using the component)
 
-> **Note:** CI/CD components and templates do not have CVEs in public vulnerability databases. The PBOM is primarily an **inventory and compliance tool**: it tells you *what's in your pipeline*, not whether those items have known vulnerabilities. For image vulnerability scanning, use `trivy image` or `grype` directly on the images.
+> **Note:** CI/CD components and templates do not have CVEs in public vulnerability databases. The PBOM is primarily an **inventory and compliance tool**. For image vulnerability scanning, use dedicated tools like `trivy image` or `grype`.
 
-📖 See [docs/PBOM.md](docs/PBOM.md) for full format documentation, field reference, and tool compatibility.
+📖 See [docs/PBOM.md](docs/PBOM.md) for full format documentation and field reference.
 
-#### Example Output
+### Terminal Output
 
 Plumber provides colorized terminal output for easy scanning:
 
@@ -465,6 +498,58 @@ Plumber provides colorized terminal output for easy scanning:
 - **Red crosses (✗)** indicate failing controls  
 - **Yellow bullets (•)** highlight specific issues found
 - Summary tables show compliance percentages at a glance
+
+---
+
+## 🔗 GitLab Integration
+
+Plumber integrates directly with GitLab to provide visual compliance feedback where your team works.
+
+### Merge Request Comments
+
+Automatically post compliance summaries on merge requests to catch issues before they're merged.
+
+```yaml
+include:
+  - component: gitlab.com/getplumber/plumber/plumber@v0.1.26
+    inputs:
+      mr_comment: true  # Requires api scope on token
+```
+
+<p align="center">
+  <img src="assets/merge-request-comments.png" alt="Merge Request Comment" width="800">
+</p>
+
+**Features:**
+- Shows compliance badge with pass/fail status
+- Lists all controls with individual compliance percentages
+- Details specific issues found with job names and image references
+- Automatically updates on each pipeline run (doesn't create duplicate comments)
+
+> ⚠️ **Token requirement:** The `api` scope is required (not `read_api`) to create/update MR comments.
+
+### Project Badges
+
+Display a live compliance badge on your project's overview page.
+
+```yaml
+include:
+  - component: gitlab.com/getplumber/plumber/plumber@v0.1.26
+    inputs:
+      badge: true  # Requires api scope on token
+```
+
+<p align="center">
+  <img src="assets/badge-comment.png" alt="Project Badge" width="300">
+</p>
+
+**Features:**
+- Shows current compliance percentage
+- **Green** when compliance meets threshold, **red** when below
+- Only updates on default branch pipelines (not on MRs or feature branches)
+- Badge appears in GitLab's "Project information" section
+
+> ⚠️ **Token requirement:** The `api` scope is required (not `read_api`) and Maintainer role to manage project badges.
 
 ---
 
