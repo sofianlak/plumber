@@ -8,6 +8,7 @@ import (
 
 	"github.com/getplumber/plumber/configuration"
 	"github.com/getplumber/plumber/control"
+	glabCI "github.com/getplumber/plumber/gitlab"
 	"github.com/getplumber/plumber/pbom"
 	"github.com/getplumber/plumber/utils"
 	"github.com/sirupsen/logrus"
@@ -25,6 +26,8 @@ var (
 	threshold         float64
 	pbomFile          string
 	pbomCycloneDXFile string
+	mrComment         bool
+	badge             bool
 )
 
 var analyzeCmd = &cobra.Command{
@@ -55,6 +58,8 @@ Optional flags:
   --output           Write JSON results to file (optional)
   --pbom             Write PBOM (Pipeline Bill of Materials) to file (optional)
   --pbom-cyclonedx   Write PBOM in CycloneDX format for integration with security tools
+  --mr-comment       Post/update a compliance comment on the merge request (requires api scope, merge request pipeline only)
+  --badge            Create/update a Plumber compliance badge on the project (requires api scope; only runs on default branch)
 
 Exit codes:
   0  Analysis passed (compliance >= threshold)
@@ -94,6 +99,8 @@ func init() {
 	analyzeCmd.Flags().StringVarP(&outputFile, "output", "o", "", "Write JSON results to file")
 	analyzeCmd.Flags().StringVar(&pbomFile, "pbom", "", "Write PBOM (Pipeline Bill of Materials) to file")
 	analyzeCmd.Flags().StringVar(&pbomCycloneDXFile, "pbom-cyclonedx", "", "Write PBOM in CycloneDX format (for security tool integration)")
+	analyzeCmd.Flags().BoolVar(&mrComment, "mr-comment", false, "Post/update a compliance comment on the merge request (requires api scope token; only works in merge request pipelines)")
+	analyzeCmd.Flags().BoolVar(&badge, "badge", false, "Create/update a Plumber compliance badge on the project (requires api scope; only runs on default branch)")
 }
 
 func runAnalyze(cmd *cobra.Command, args []string) error {
@@ -277,6 +284,61 @@ func runAnalyze(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		fmt.Fprintf(os.Stderr, "PBOM (CycloneDX) written to: %s\n", pbomCycloneDXFile)
+	}
+
+	// Post merge request comment if explicitly enabled and in a CI merge request pipeline
+	if mrComment {
+		if mrIID := glabCI.DetectMergeRequestIID(); mrIID != 0 {
+			fmt.Fprintf(os.Stderr, "Merge request pipeline detected (MR !%d), posting compliance comment...\n", mrIID)
+			if err := control.ManageMergeRequestComment(result.ProjectID, mrIID, result, compliance, threshold, conf); err != nil {
+				// Log but don't fail the analysis for a comment error
+				fmt.Fprintf(os.Stderr, "Warning: failed to post merge request comment: %v\n", err)
+			} else {
+				fmt.Fprintf(os.Stderr, "Merge request comment posted successfully\n")
+			}
+		}
+	}
+
+	// Create/update project badge if explicitly enabled AND on default branch
+	// Badge should only reflect compliance of the default branch, not MRs or feature branches
+	if badge {
+		shouldUpdateBadge := false
+		skipReason := ""
+
+		if glabCI.IsRunningInCI() {
+			// In CI: use environment variables
+			if glabCI.IsOnDefaultBranchCI() {
+				shouldUpdateBadge = true
+			} else {
+				skipReason = "not on default branch in CI"
+			}
+		} else {
+			// Locally: check various conditions
+			if result.CIConfigSource == "local" {
+				// Using local CI files - don't update badge (user is testing locally)
+				skipReason = "using local CI files (testing mode)"
+			} else if !cmd.Flags().Changed("branch") {
+				// --branch not specified = analyzing default branch
+				shouldUpdateBadge = true
+			} else if conf.Branch == result.DefaultBranch {
+				// --branch specified and matches default branch
+				shouldUpdateBadge = true
+			} else {
+				skipReason = fmt.Sprintf("analyzing branch '%s', not default branch '%s'", conf.Branch, result.DefaultBranch)
+			}
+		}
+
+		if shouldUpdateBadge {
+			fmt.Fprintf(os.Stderr, "Updating project compliance badge...\n")
+			if err := control.ManageProjectBadge(result.ProjectID, compliance, threshold, conf); err != nil {
+				// Log but don't fail the analysis for a badge error
+				fmt.Fprintf(os.Stderr, "Warning: failed to update project badge: %v\n", err)
+			} else {
+				fmt.Fprintf(os.Stderr, "Project badge updated successfully\n")
+			}
+		} else {
+			fmt.Fprintf(os.Stderr, "Skipping badge update (%s)\n", skipReason)
+		}
 	}
 
 	// Check compliance against threshold

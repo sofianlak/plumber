@@ -10,8 +10,9 @@ var l = logrus.WithField("context", "control")
 // AnalysisResult holds the complete result of a pipeline analysis
 type AnalysisResult struct {
 	// Project information
-	ProjectPath string `json:"projectPath"`
-	ProjectID   int    `json:"projectId"`
+	ProjectPath   string `json:"projectPath"`
+	ProjectID     int    `json:"projectId"`
+	DefaultBranch string `json:"defaultBranch"`
 
 	// CI configuration status
 	CiValid        bool     `json:"ciValid"`

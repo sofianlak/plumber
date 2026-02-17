@@ -424,13 +424,6 @@ func ReplaceVariable(input string, project, group, instance, job, defaultJob, pr
 	return current
 }
 
-// IsRunningInCI checks if the code is running inside a GitLab CI environment
-// by checking if the CI environment variable is set to "true"
-func IsRunningInCI() bool {
-	ciEnv := os.Getenv("CI")
-	return strings.ToLower(ciEnv) == "true"
-}
-
 // ReplaceVariableFromEnv replaces variables in the input string using environment variables
 // This is used when running in CI mode where all variables are available in the environment
 func ReplaceVariableFromEnv(input string) string {

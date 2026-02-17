@@ -1,10 +1,10 @@
 spec:
   inputs:
     # Authentication
-    # Requires a GitLab token with read_api + read_repository scopes
+    # Requires a GitLab token with read_api + read_repository scopes (or api scope if mr_comment is enabled)
     # Set GITLAB_TOKEN as a CI/CD variable in Settings > CI/CD > Variables
     gitlab_token:
-      description: "GitLab API token (requires read_api + read_repository scopes)"
+      description: "GitLab API token (requires read_api + read_repository scopes, or api scope if mr_comment is enabled)"
       default: $GITLAB_TOKEN
     
     # Project configuration
@@ -62,6 +62,14 @@ spec:
       description: "Enable verbose/debug output for troubleshooting"
       default: false
       type: boolean
+    mr_comment:
+      description: "Post/update a compliance summary comment on the merge request (requires api scope on the token)"
+      default: false
+      type: boolean
+    badge:
+      description: "Create/update a Plumber compliance badge on the project (requires api scope; only runs on default branch pipelines)"
+      default: false
+      type: boolean
 
 ---
 
@@ -70,7 +78,7 @@ spec:
 #
 # Prerequisites:
 #   1. Create a GitLab token (PAT or Project/Group Access Token) with:
-#      - read_api scope
+#      - read_api scope (or api scope if mr_comment is enabled)
 #      - read_repository scope
 #   2. Add it as GITLAB_TOKEN in Settings > CI/CD > Variables
 #      (masked recommended)
@@ -144,6 +152,14 @@ spec:
       if [ "$[[ inputs.verbose ]]" = "true" ]; then
         VERBOSE_FLAG="--verbose"
       fi
+      MR_COMMENT_FLAG=""
+      if [ "$[[ inputs.mr_comment ]]" = "true" ]; then
+        MR_COMMENT_FLAG="--mr-comment"
+      fi
+      BADGE_FLAG=""
+      if [ "$[[ inputs.badge ]]" = "true" ]; then
+        BADGE_FLAG="--badge"
+      fi
       /plumber analyze \
         --gitlab-url "$[[ inputs.server_url ]]" \
         --project "$[[ inputs.project_path ]]" \
@@ -154,7 +170,9 @@ spec:
         $OUTPUT_FLAG \
         $PBOM_FLAG \
         $PBOM_CDX_FLAG \
-        $VERBOSE_FLAG
+        $VERBOSE_FLAG \
+        $MR_COMMENT_FLAG \
+        $BADGE_FLAG
   artifacts:
     paths:
       - $[[ inputs.output_file ]]

@@ -171,6 +171,8 @@ If the local CI configuration is invalid, Plumber exits with an error showing th
 4. Add the token as `GITLAB_TOKEN` (masked recommended)
 
 > ⚠️ **Important:** The token must belong to a user with **Maintainer** role (or higher) on the project to access branch protection settings and other project configurations.
+>
+> **Using `mr_comment` or `badge`?** The token needs the `api` scope (instead of `read_api`) to create/update merge request comments or project badges.
 
 
 ### Step 2: Add to Your Pipeline
@@ -179,7 +181,7 @@ Add this to your `.gitlab-ci.yml`:
 
 ```yaml
 include:
-  - component: gitlab.com/getplumber/plumber/plumber@v0.1.23
+  - component: gitlab.com/getplumber/plumber/plumber@v0.1.26
 ```
 * Get the latest version from the [Catalog](https://gitlab.com/explore/catalog/getplumber/plumber)
 
@@ -199,7 +201,7 @@ Override any input to fit your needs:
 
 ```yaml
 include:
-  - component: gitlab.com/getplumber/plumber/plumber@v0.1.23
+  - component: gitlab.com/getplumber/plumber/plumber@v0.1.26
     inputs:
       threshold: 80                           # Minimum % to pass (default: 100)
       config_file: configs/my-plumber.yaml    # Custom config path
@@ -227,6 +229,8 @@ include:
 | `image` | `getplumber/plumber:0.1` | Docker image to use |
 | `allow_failure` | `false` | Allow job to fail without blocking |
 | `verbose` | `false` | Enable debug output |
+| `mr_comment` | `false` | Post/update a compliance comment on the merge request (requires `api` scope) |
+| `badge` | `false` | Create/update a Plumber compliance badge on the project (requires `api` scope; only runs on default branch) |
 
 </details>
 
@@ -476,10 +480,10 @@ brew install plumber
 To install a specific version:
 
 ```bash
-brew install getplumber/plumber/plumber@0.1.26
+brew install getplumber/plumber/plumber@0.1.42
 ```
 
-> **Note:** Versioned formulas are keg-only. Use the full path for example `/usr/local/opt/plumber@0.1.26/bin/plumber` or run `brew link plumber@0.1.26` to add it to your PATH.
+> **Note:** Versioned formulas are keg-only. Use the full path for example `/usr/local/opt/plumber@0.1.42/bin/plumber` or run `brew link plumber@0.1.42` to add it to your PATH.
 
 ### Mise
 
@@ -601,6 +605,8 @@ plumber analyze [flags]
 | `--pbom` | No | — | Write PBOM (Pipeline Bill of Materials) to file |
 | `--pbom-cyclonedx` | No | — | Write PBOM in CycloneDX SBOM format |
 | `--print` | No | `true` | Print text output to stdout |
+| `--mr-comment` | No | `false` | Post/update a compliance comment on the merge request (MR pipelines only: requires `api` scope) |
+| `--badge` | No | `false` | Create/update a Plumber compliance badge on the project (requires `api` scope; only runs on default branch) |
 | `--verbose`, `-v` | No | `false` | Enable verbose/debug output for troubleshooting |
 
 > \* Auto-detected from git remote (`origin`) if not specified. Supports both SSH and HTTPS remote URLs.
@@ -609,7 +615,7 @@ plumber analyze [flags]
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GITLAB_TOKEN` | Yes | GitLab API token with `read_api` + `read_repository` scopes (from a Maintainer or higher) |
+| `GITLAB_TOKEN` | Yes | GitLab API token with `read_api` + `read_repository` scopes (from a Maintainer or higher). Use `api` scope instead if `--mr-comment` or `--badge` is enabled. |
 
 ### Exit Codes
 
@@ -706,7 +712,7 @@ If you're running a self-hosted GitLab instance, you'll need to host your own co
 In the project you want to scan:
 
 1. Go to **User Settings → Access Tokens** on your GitLab instance
-2. Create a Personal Access Token with `read_api` + `read_repository` scopes
+2. Create a Personal Access Token with `read_api` + `read_repository` scopes (or `api` if using `mr_comment` or `badge`)
 3. Go to the project's **Settings → CI/CD → Variables**
 4. Add the token as `GITLAB_TOKEN` (masked recommended)
 
@@ -732,7 +738,11 @@ include:
 | `GITLAB_TOKEN environment variable is required` | Set `GITLAB_TOKEN` in CI/CD Variables or export it locally |
 | `401 Unauthorized` | Token needs `read_api` + `read_repository` scopes, from a Maintainer or higher |
 | `403 Forbidden` on MR settings | Expected on non-Premium GitLab; continues without that data |
+| `403 Forbidden` on MR comment | Token needs `api` scope (not `read_api`) when `--mr-comment` is enabled |
+| `403 Forbidden` on badge | Token needs `api` scope (not `read_api`) when `--badge` is enabled |
 | `404 Not Found` | Verify project path and GitLab URL are correct |
+| MR comment not posted | `--mr-comment` only works in merge request pipelines (`CI_MERGE_REQUEST_IID` must be set) |
+| Badge not created/updated | Token needs `api` scope and Maintainer role (or higher) on the project |
 | Configuration file not found | Use absolute path in Docker, relative path otherwise |
 
 > 💡 **Need help?** [Open an issue](https://github.com/getplumber/plumber/issues) or [join our Discord](https://discord.gg/932xkSU24f)

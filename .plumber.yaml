@@ -41,7 +41,7 @@ controls:
     # This takes precedence over the forbidden tags list — any image not using
     # an immutable digest reference will be flagged, including standard version
     # tags like alpine:3.19 or node:20.
-    containerImagesMustBePinnedByDigest: false
+    containerImagesMustBePinnedByDigest: true
 
   # ===========================================
   # Container images must come from authorized sources

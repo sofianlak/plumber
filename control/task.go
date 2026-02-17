@@ -44,6 +44,7 @@ func RunAnalysis(conf *configuration.Configuration) (*AnalysisResult, error) {
 
 	// Update result with project info
 	result.ProjectID = project.IdOnPlatform
+	result.DefaultBranch = project.DefaultBranch
 
 	l.WithFields(logrus.Fields{
 		"projectID":     project.IdOnPlatform,
