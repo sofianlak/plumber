@@ -1,3 +1,15 @@
+## [0.1.43](https://github.com/getplumber/plumber/compare/v0.1.42...v0.1.43) (2026-02-18)
+
+
+### ✨ Features
+
+* **config:** Add ValidateKnownKeys to warn on unknown config keys ([4c33ca3](https://github.com/getplumber/plumber/commit/4c33ca3c980cc57419b7b457bfae09c7543ba8d3)), closes [#58](https://github.com/getplumber/plumber/issues/58) [#58](https://github.com/getplumber/plumber/issues/58)
+
+
+### 🐛 Bug Fixes
+
+* **config:** Fix compilation issues + make validation recursive to test subkeys ([405abe4](https://github.com/getplumber/plumber/commit/405abe4dc7f78f2bee3e72b7e94f7f9a7568c4d7))
+
 ## [0.1.42](https://github.com/getplumber/plumber/compare/v0.1.41...v0.1.42) (2026-02-17)
 
 
