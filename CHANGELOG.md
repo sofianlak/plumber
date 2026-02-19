@@ -1,3 +1,15 @@
+## [0.1.44](https://github.com/getplumber/plumber/compare/v0.1.43...v0.1.44) (2026-02-19)
+
+
+### ✨ Features
+
+* **analyze:** add --controls and --skip-controls control filtering ([9a9aca0](https://github.com/getplumber/plumber/commit/9a9aca0a50e63eb27a7f7c8f5470ae6922ff425c))
+
+
+### 🐛 Bug Fixes
+
+* **controls:** Fix bug in controls parsing and swap around some functions and files ([cdf0507](https://github.com/getplumber/plumber/commit/cdf050792ce83b674ce80429f63767d81c90f321))
+
 ## [0.1.43](https://github.com/getplumber/plumber/compare/v0.1.42...v0.1.43) (2026-02-18)
 
 
