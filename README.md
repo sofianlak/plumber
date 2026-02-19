@@ -565,10 +565,10 @@ brew install plumber
 To install a specific version:
 
 ```bash
-brew install getplumber/plumber/plumber@0.1.43
+brew install getplumber/plumber/plumber@0.1.42
 ```
 
-> **Note:** Versioned formulas are keg-only. Use the full path for example `/usr/local/opt/plumber@0.1.43/bin/plumber` or run `brew link plumber@0.1.43` to add it to your PATH.
+> **Note:** Versioned formulas are keg-only. Use the full path for example `/usr/local/opt/plumber@0.1.42/bin/plumber` or run `brew link plumber@0.1.42` to add it to your PATH.
 
 ### Mise
 
@@ -761,6 +761,39 @@ plumber config view --config custom-plumber.yaml
 
 # View without colors (for piping or scripts)
 plumber config view --no-color
+```
+
+### `plumber config validate`
+
+Validate a configuration file for correctness. Detects unknown control names and sub-keys with typo suggestions using fuzzy matching.
+
+```bash
+plumber config validate [flags]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--config`, `-c` | `.plumber.yaml` | Path to configuration file |
+
+Warnings are printed to stderr so they don't interfere with scripted output.
+
+**Examples:**
+
+```bash
+# Validate the default .plumber.yaml
+plumber config validate
+
+# Validate a specific config file
+plumber config validate --config custom-plumber.yaml
+```
+
+**Sample output with typos:**
+
+```
+Configuration validation warnings:
+  - Unknown control in .plumber.yaml: "containerImageMustNotUseForbiddenTag". Did you mean "containerImageMustNotUseForbiddenTags"?
+  - Unknown key "tag" in control "containerImageMustNotUseForbiddenTags". Did you mean "tags"?
+  - Unknown key "allowForcePushes" in control "branchMustBeProtected". Did you mean "allowForcePush"?
 ```
 
 ---
