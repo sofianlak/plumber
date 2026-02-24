@@ -338,28 +338,3 @@ func TestValidControlNames(t *testing.T) {
 		}
 	}
 }
-
-func TestValidControlNames(t *testing.T) {
-	names := ValidControlNames()
-
-	expected := []string{
-		"branchMustBeProtected",
-		"containerImageMustComeFromAuthorizedSources",
-		"containerImageMustNotUseForbiddenTags",
-		"includesMustBeUpToDate",
-		"includesMustNotUseForbiddenVersions",
-		"pipelineMustIncludeComponent",
-		"pipelineMustIncludeTemplate",
-		"pipelineMustNotIncludeHardcodedJobs",
-	}
-
-	if len(names) != len(expected) {
-		t.Fatalf("ValidControlNames() returned %d entries, want %d (%v)", len(names), len(expected), names)
-	}
-
-	for i := range expected {
-		if names[i] != expected[i] {
-			t.Fatalf("ValidControlNames()[%d] = %q, want %q", i, names[i], expected[i])
-		}
-	}
-}
