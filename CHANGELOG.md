@@ -1,3 +1,10 @@
+## [0.1.47](https://github.com/getplumber/plumber/compare/v0.1.46...v0.1.47) (2026-02-25)
+
+
+### ✨ Features
+
+* **controls:** Add overridden component and templates issue & integration into pbom and cyclonedex ([e970c27](https://github.com/getplumber/plumber/commit/e970c27697c29873057a5f6b6109715ba47d3896))
+
 ## [0.1.46](https://github.com/getplumber/plumber/compare/v0.1.45...v0.1.46) (2026-02-25)
 
 
