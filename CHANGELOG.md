@@ -1,3 +1,16 @@
+## [0.1.46](https://github.com/getplumber/plumber/compare/v0.1.45...v0.1.46) (2026-02-25)
+
+
+### ✨ Features
+
+* **cmd:** Add --fail-warnings on the analyze and config validate commands ([fbc5839](https://github.com/getplumber/plumber/commit/fbc58391ebc1e51d412588ed5748587a6e125227))
+* **cmd:** validating config file before analysis ([a1dc4bd](https://github.com/getplumber/plumber/commit/a1dc4bd7c14d4fe230f770849c0b12683fba8323))
+
+
+### ♻️ Refactoring
+
+* **cmd:** extract config validation logic ([db02f52](https://github.com/getplumber/plumber/commit/db02f524a28a83645631a0c7325bea161f1d86db))
+
 ## [0.1.45](https://github.com/getplumber/plumber/compare/v0.1.44...v0.1.45) (2026-02-25)
 
 
