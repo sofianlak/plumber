@@ -6,6 +6,19 @@
 * **cmd:** notify user when a newer version of plumber is available ([deca33f](https://github.com/getplumber/plumber/commit/deca33f74d9c2f1c2468d8ce98a5693df1fa9d9c)), closes [#39](https://github.com/getplumber/plumber/issues/39)
 * **version:** async update check with opt-out ([a1ef745](https://github.com/getplumber/plumber/commit/a1ef74553e85c2341e803ea4ec683f6f0c4d6e31))
 
+
+### 🐛 Bug Fixes
+
+* **release:** Persist creds throughout release cycle ([4483cf0](https://github.com/getplumber/plumber/commit/4483cf0fc8704f0763f95ee8bfc28462be66e157))
+
+## [0.1.45](https://github.com/getplumber/plumber/compare/v0.1.44...v0.1.45) (2026-02-25)
+
+
+### ✨ Features
+
+* **cmd:** notify user when a newer version of plumber is available ([deca33f](https://github.com/getplumber/plumber/commit/deca33f74d9c2f1c2468d8ce98a5693df1fa9d9c)), closes [#39](https://github.com/getplumber/plumber/issues/39)
+* **version:** async update check with opt-out ([a1ef745](https://github.com/getplumber/plumber/commit/a1ef74553e85c2341e803ea4ec683f6f0c4d6e31))
+
 ## [0.1.44](https://github.com/getplumber/plumber/compare/v0.1.43...v0.1.44) (2026-02-19)
 
 
