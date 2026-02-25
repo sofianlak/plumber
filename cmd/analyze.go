@@ -65,6 +65,7 @@ Optional flags:
   --badge            Create/update a Plumber compliance badge on the project (requires api scope; only runs on default branch)
   --controls         Run only listed controls (comma-separated)
   --skip-controls    Skip listed controls (comma-separated)
+  --fail-warnings    Treat configuration warnings as errors (exit 1)
 
 Exit codes:
   0  Analysis passed (compliance >= threshold)
@@ -108,6 +109,7 @@ func init() {
 	analyzeCmd.Flags().BoolVar(&badge, "badge", false, "Create/update a Plumber compliance badge on the project (requires api scope; only runs on default branch)")
 	analyzeCmd.Flags().StringVar(&controlsFilter, "controls", "", "Run only listed controls (comma-separated)")
 	analyzeCmd.Flags().StringVar(&skipControls, "skip-controls", "", "Skip listed controls (comma-separated)")
+	analyzeCmd.Flags().BoolVar(&failWarnings, "fail-warnings", false, "Treat configuration warnings as errors (exit 1)")
 }
 
 func runAnalyze(cmd *cobra.Command, args []string) error {
@@ -178,20 +180,24 @@ func runAnalyze(cmd *cobra.Command, args []string) error {
 	// Clean up URL
 	cleanGitlabURL := strings.TrimSuffix(gitlabURL, "/")
 
-	// Read raw config for unknown keys check
-	err = validateConfigFileWarnings(configFile)
-	if err != nil {
-		return fmt.Errorf("failed to validate configuration file: %w", err)
-	}
-
 	// Load Plumber configuration (required)
-	plumberConfig, configPath, err := configuration.LoadPlumberConfig(configFile)
+	plumberConfig, configPath, configWarnings, err := configuration.LoadPlumberConfig(configFile)
 	if err != nil {
-		// if err contains "config file not found", tell them they can generate a default config with `plumber config generate`
 		if strings.Contains(err.Error(), "config file not found") {
 			return fmt.Errorf("configuration file not found: %w. You can generate a default config with `plumber config generate`", err)
 		}
 		return fmt.Errorf("configuration error: %w", err)
+	}
+
+	if len(configWarnings) > 0 {
+		fmt.Fprintf(os.Stderr, "Configuration validation warnings:\n")
+		for _, warning := range configWarnings {
+			fmt.Fprintf(os.Stderr, "  - %s\n", warning)
+		}
+		if failWarnings {
+			return fmt.Errorf("configuration has %d warning(s) and --fail-warnings is set", len(configWarnings))
+		}
+		fmt.Fprintf(os.Stderr, "Please fix the warnings above for best results.\n\n")
 	}
 
 	// Print banner if output is enabled

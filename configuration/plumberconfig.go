@@ -267,42 +267,44 @@ func (c *RequiredTemplatesControlConfig) GetResolvedRequiredGroups() ([][]string
 	return c.RequiredGroups, nil
 }
 
-// LoadPlumberConfig loads configuration from a file path
-// The config file path is required - returns error if empty or not found
-func LoadPlumberConfig(configPath string) (*PlumberConfig, string, error) {
+// LoadPlumberConfig loads configuration from a file path.
+// It reads the file once, validates for unknown keys, parses
+// the YAML into the config struct, and runs structural validation.
+// Returns the parsed config, the resolved path, any unknown-key
+// warnings, and an error if loading or validation failed.
+func LoadPlumberConfig(configPath string) (*PlumberConfig, string, []string, error) {
 	l := logrus.WithField("action", "LoadPlumberConfig")
 
 	if configPath == "" {
-		return nil, "", fmt.Errorf("config file path is required")
+		return nil, "", nil, fmt.Errorf("config file path is required")
 	}
 
 	l = l.WithField("configPath", configPath)
 	l.Info("Loading configuration from file")
 
-	// Read the file
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, configPath, fmt.Errorf("config file not found: %s", configPath)
+			return nil, configPath, nil, fmt.Errorf("config file not found: %s", configPath)
 		}
 		l.WithError(err).Error("Failed to read config file")
-		return nil, configPath, err
+		return nil, configPath, nil, err
 	}
 
-	// Parse YAML
+	warnings := ValidateKnownKeys(data)
+
 	config := &PlumberConfig{}
 	if err := yaml.Unmarshal(data, config); err != nil {
 		l.WithError(err).Error("Failed to parse config file")
-		return nil, configPath, err
+		return nil, configPath, warnings, err
 	}
 
-	// Validate expression fields early to catch syntax errors at load time
 	if err := config.validate(); err != nil {
-		return nil, configPath, fmt.Errorf("configuration validation error: %w", err)
+		return nil, configPath, warnings, fmt.Errorf("configuration validation error: %w", err)
 	}
 
 	l.WithField("config", config).Debug("Configuration loaded successfully")
-	return config, configPath, nil
+	return config, configPath, warnings, nil
 }
 
 // validate checks for configuration errors, including expression syntax

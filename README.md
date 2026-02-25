@@ -238,6 +238,7 @@ include:
 | `badge` | `false` | Create/update a Plumber compliance badge on the project (requires `api` scope; only runs on default branch) |
 | `controls` | — | Run only listed controls (comma-separated). Cannot be used with `skip_controls` |
 | `skip_controls` | — | Skip listed controls (comma-separated). Cannot be used with `controls` |
+| `fail_warnings` | `false` | Treat configuration warnings (unknown keys) as errors (exit 1) |
 
 </details>
 
@@ -741,6 +742,7 @@ plumber analyze [flags]
 | `--badge` | No | `false` | Create/update a Plumber compliance badge on the project (requires `api` scope; only runs on default branch) |
 | `--controls` | No | — | Run only listed controls (comma-separated). Cannot be used with `--skip-controls` |
 | `--skip-controls` | No | — | Skip listed controls (comma-separated). Cannot be used with `--controls` |
+| `--fail-warnings` | No | `false` | Treat configuration warnings (unknown keys) as errors (exit 1) |
 | `--verbose`, `-v` | No | `false` | Enable verbose/debug output for troubleshooting |
 
 > \* Auto-detected from git remote (`origin`) if not specified. Supports both SSH and HTTPS remote URLs.
@@ -823,8 +825,9 @@ plumber config validate [flags]
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--config`, `-c` | `.plumber.yaml` | Path to configuration file |
+| `--fail-warnings` | `false` | Treat configuration warnings as errors (exit 1) |
 
-Warnings are printed to stderr so they don't interfere with scripted output.
+Warnings are printed to stderr so they don't interfere with scripted output. Use `--fail-warnings` to exit with code 1 when warnings are found (useful in CI).
 
 **Examples:**
 
@@ -834,6 +837,9 @@ plumber config validate
 
 # Validate a specific config file
 plumber config validate --config custom-plumber.yaml
+
+# Fail on warnings (for CI pipelines)
+plumber config validate --fail-warnings
 ```
 
 **Sample output with typos:**

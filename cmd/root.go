@@ -10,8 +10,9 @@ import (
 
 var (
 	// Global flags
-	verbose   bool
-	updateMsg chan string
+	verbose      bool
+	updateMsg    chan string
+	failWarnings bool
 )
 
 var rootCmd = &cobra.Command{
