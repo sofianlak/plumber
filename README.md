@@ -423,7 +423,7 @@ pipelineMustIncludeComponent:
 <details>
 <summary><b>8. Pipeline must include template</b></summary>
 
-Ensures required templates (project includes) are present in the pipeline. Templates that are imported but have their jobs overridden with forbidden CI/CD keywords (e.g., `script`, `image`, `rules`) are flagged as **overridden** — they still count as imported but produce separate issues and reduce compliance to 50% for that template.
+Ensures required templates (project includes) are present in the pipeline. Templates that are imported but have their jobs overridden with forbidden CI/CD keywords (e.g., `script`, `image`, `rules`) are flagged as **overridden**; they still count as imported but produce separate issues and reduce compliance to 50% for that template.
 
 There are two ways to define requirements (use one, not both):
 
@@ -531,7 +531,7 @@ The PBOM includes:
 - **CI/CD components** with version and source
 - **Templates** and includes with version tracking
 - **Compliance status** for each dependency
-- **Override detection** — includes whose jobs are overridden with forbidden CI/CD keywords
+- **Override detection** - includes whose jobs are overridden with forbidden CI/CD keywords
 
 ### CycloneDX SBOM
 
@@ -915,7 +915,7 @@ The imported project comes with upstream tags. The preferred method is to run a 
 
 - Go to **CI/CD → Pipelines → Run pipeline**
 - Select an imported tag (e.g., `v0.1.28`) from the branch/tag dropdown
-- Click **Run pipeline** — this creates a release for that tag in the CI/CD Catalog
+- Click **Run pipeline**: this creates a release for that tag in the CI/CD Catalog
 
 Alternatively, create a new tag manually, but this might conflict later on when you want to fetch remote tags:
 
@@ -996,7 +996,7 @@ The mirrored project comes with upstream tags. The preferred method is to run a 
 
 - Go to **CI/CD → Pipelines → Run pipeline**
 - Select an imported tag (e.g., `v0.1.28`) from the branch/tag dropdown
-- Click **Run pipeline** — this creates a release for that tag in the CI/CD Catalog
+- Click **Run pipeline**: this creates a release for that tag in the CI/CD Catalog
 
 Alternatively, create a new tag manually:
 
