@@ -1,3 +1,16 @@
+## [0.1.48](https://github.com/getplumber/plumber/compare/v0.1.47...v0.1.48) (2026-03-03)
+
+
+### ✨ Features
+
+* **ci:** Add dependabot ([3480a77](https://github.com/getplumber/plumber/commit/3480a777b3ef3bcf1dd72269da67aad28c3fcf0b))
+* **ci:** Start adding test, lint, scan and pin versions by digest ([ec77e70](https://github.com/getplumber/plumber/commit/ec77e709864ddf621ca5337de3345c5c18627466))
+
+
+### 🐛 Bug Fixes
+
+* **ci:** Fix CI lint issues ([5288379](https://github.com/getplumber/plumber/commit/528837904a46b7b6334bbfe5f767d200faebdc81))
+
 ## [0.1.47](https://github.com/getplumber/plumber/compare/v0.1.46...v0.1.47) (2026-02-25)
 
 
