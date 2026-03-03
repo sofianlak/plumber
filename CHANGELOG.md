@@ -1,3 +1,10 @@
+## [0.1.49](https://github.com/getplumber/plumber/compare/v0.1.48...v0.1.49) (2026-03-03)
+
+
+### ✨ Features
+
+* **ci:** Replace trivvy with grype ([984286f](https://github.com/getplumber/plumber/commit/984286f2ca871792b8a12e34bea7a647cb72450f))
+
 ## [0.1.48](https://github.com/getplumber/plumber/compare/v0.1.47...v0.1.48) (2026-03-03)
 
 
