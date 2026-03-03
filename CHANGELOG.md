@@ -1,3 +1,10 @@
+## [0.1.50](https://github.com/getplumber/plumber/compare/v0.1.49...v0.1.50) (2026-03-03)
+
+
+### ✨ Features
+
+* **cmd:** Add progress spinner during analysis ([80b1bad](https://github.com/getplumber/plumber/commit/80b1bad2a9b556d0e8414e2c90b4199cda5b26c4)), closes [#64](https://github.com/getplumber/plumber/issues/64)
+
 ## [0.1.49](https://github.com/getplumber/plumber/compare/v0.1.48...v0.1.49) (2026-03-03)
 
 
