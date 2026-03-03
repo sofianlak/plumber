@@ -79,6 +79,7 @@ Before opening an issue, please:
    ```bash
    make build
    make test
+   make lint
    ```
 
 4. **Commit your changes** following our [commit conventions](#commit-conventions)
@@ -121,6 +122,7 @@ This runs two steps:
 | `make build` | Embed config + build binary |
 | `make build-all` | Cross-compile for Linux, macOS, and Windows |
 | `make test` | Embed config + run all tests |
+| `make lint` | Embed config + lint code |
 | `make run` | Embed config + `go run .` (quick dev iteration) |
 | `make install` | Build + install to `/usr/local/bin/` |
 | `make clean` | Remove binary and generated `default.yaml` |
@@ -352,6 +354,7 @@ chore(deps): update go-gitlab to v0.100.0
 1. **Before submitting**, ensure your code:
    - Builds successfully (`make build`)
    - Passes tests (`make test`)
+   - Lints correctly (`make lint`)
    - Is formatted (`gofmt -w .`)
 
 2. **Code review** by maintainers:
