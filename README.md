@@ -629,10 +629,10 @@ brew install plumber
 To install a specific version:
 
 ```bash
-brew install getplumber/plumber/plumber@0.1.47
+brew install getplumber/plumber/plumber@0.1.48
 ```
 
-> **Note:** Versioned formulas are keg-only. Use the full path for example `/usr/local/opt/plumber@0.1.47/bin/plumber` or run `brew link plumber@0.1.47` to add it to your PATH.
+> **Note:** Versioned formulas are keg-only. Use the full path for example `/usr/local/opt/plumber@0.1.48/bin/plumber` or run `brew link plumber@0.1.48` to add it to your PATH.
 
 ### Mise
 
