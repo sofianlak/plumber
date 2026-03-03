@@ -1,3 +1,15 @@
+## [0.1.51](https://github.com/getplumber/plumber/compare/v0.1.50...v0.1.51) (2026-03-03)
+
+
+### ✨ Features
+
+* **controls:** Add debug trace detection control ([5e08b97](https://github.com/getplumber/plumber/commit/5e08b974d17ee2468768f6b8a2917b09eddfe0ff)), closes [#86](https://github.com/getplumber/plumber/issues/86)
+
+
+### 🐛 Bug Fixes
+
+* **rebase:** Rebase on main and add spinner ([20e8c63](https://github.com/getplumber/plumber/commit/20e8c63c5334875e467244fb55bcb059e978c3b8))
+
 ## [0.1.50](https://github.com/getplumber/plumber/compare/v0.1.49...v0.1.50) (2026-03-03)
 
 
