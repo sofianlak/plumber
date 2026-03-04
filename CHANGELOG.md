@@ -1,3 +1,10 @@
+## [0.1.52](https://github.com/getplumber/plumber/compare/v0.1.51...v0.1.52) (2026-03-04)
+
+
+### ✨ Features
+
+* **controls:** Add unsafe variable expansion control for user-filled predefined variables ([0f7ec72](https://github.com/getplumber/plumber/commit/0f7ec723ff0b03ffb1c345fa393eaa8f9e022dd7))
+
 ## [0.1.51](https://github.com/getplumber/plumber/compare/v0.1.50...v0.1.51) (2026-03-03)
 
 
