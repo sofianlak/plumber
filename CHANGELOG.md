@@ -1,3 +1,10 @@
+## [0.1.56](https://github.com/getplumber/plumber/compare/v0.1.55...v0.1.56) (2026-03-05)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** Ensure slsa3 attestation is uploaded ([29a33c0](https://github.com/getplumber/plumber/commit/29a33c0c2a8a91e03f96a74d23e4738a228dafae))
+
 ## [0.1.55](https://github.com/getplumber/plumber/compare/v0.1.54...v0.1.55) (2026-03-05)
 
 
