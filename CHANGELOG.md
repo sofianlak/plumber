@@ -1,3 +1,11 @@
+## [0.1.57](https://github.com/getplumber/plumber/compare/v0.1.56...v0.1.57) (2026-03-05)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** Improve scorecard score: ([c784ba6](https://github.com/getplumber/plumber/commit/c784ba63af49208639b4ba9678c447ba88ee92d5))
+* **ci:** Pin builder image ([d8b88f9](https://github.com/getplumber/plumber/commit/d8b88f9322f7d16d8d1218fa290c1a329d715955))
+
 ## [0.1.56](https://github.com/getplumber/plumber/compare/v0.1.55...v0.1.56) (2026-03-05)
 
 
