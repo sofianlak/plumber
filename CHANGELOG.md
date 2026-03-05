@@ -1,3 +1,11 @@
+## [0.1.54](https://github.com/getplumber/plumber/compare/v0.1.53...v0.1.54) (2026-03-05)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** Allow slsa3 stage to write ([fea8113](https://github.com/getplumber/plumber/commit/fea8113e6bac78eae5226d533bd4877601f00f72))
+* **ci:** Make salsa upload artifacts before release ([bff7fcb](https://github.com/getplumber/plumber/commit/bff7fcbb8fe1a93d8dcbbe877b6eccc83fcf0792))
+
 ## [0.1.53](https://github.com/getplumber/plumber/compare/v0.1.52...v0.1.53) (2026-03-05)
 
 
