@@ -1,3 +1,10 @@
+## [0.1.55](https://github.com/getplumber/plumber/compare/v0.1.54...v0.1.55) (2026-03-05)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** Bump semantic release and upload artifact versions ([26d81f9](https://github.com/getplumber/plumber/commit/26d81f9d1e2aa1bc061f3da22b4b428c789c358d))
+
 ## [0.1.54](https://github.com/getplumber/plumber/compare/v0.1.53...v0.1.54) (2026-03-05)
 
 
