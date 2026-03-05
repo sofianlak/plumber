@@ -131,6 +131,7 @@ jobs:
           files: |
             dist/plumber-*
             dist/checksums.txt
+            dist/*.intoto.jsonl
 
   docker:
     name: Build & Push Docker Image
