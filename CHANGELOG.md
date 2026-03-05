@@ -1,3 +1,15 @@
+## [0.1.53](https://github.com/getplumber/plumber/compare/v0.1.52...v0.1.53) (2026-03-05)
+
+
+### ✨ Features
+
+* **ci:** add SLSA 3 provenance, OpenSSF Scorecard, and security hardening ([5dad4a3](https://github.com/getplumber/plumber/commit/5dad4a38550416da5bc2f8d59ac9373e9eb00423))
+
+
+### 🐛 Bug Fixes
+
+* **ci:** Update versions and creds handling: ([cb3477a](https://github.com/getplumber/plumber/commit/cb3477aba3d2a46f1ce70b7b57bfc43abba9b5bc))
+
 ## [0.1.52](https://github.com/getplumber/plumber/compare/v0.1.51...v0.1.52) (2026-03-04)
 
 
