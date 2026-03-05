@@ -21,11 +21,14 @@ If applicable, add screenshots to help explain your problem.
 
 ## **Relevant versions and configuration files**
  - OS: Mac, Linux, Docker image
- - Gitlab Version 
+ - Gitlab Version (SaaS or self managed + tier)
  - Plumber version
  - Your `.plumber.yaml`
  - Gitlab Component version
  - Your Gitlab component Configuration
+
+## **Relevant logs**
+If applicable - with --verbose if needed
 
 ## **Additional context**
 Add any other context about the problem here.
