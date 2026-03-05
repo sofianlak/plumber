@@ -101,14 +101,20 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
-    needs: [release, binaries]
+    needs: [release, binaries, provenance]
     if: needs.release.outputs.new_release_published == 'true'
     steps:
-      - name: Download all artifacts
+      - name: Download binary artifacts
         uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           path: dist/
           merge-multiple: true
+
+      - name: Download provenance
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: ${{ needs.provenance.outputs.provenance-name }}
+          path: dist/
 
       - name: Generate checksums
         working-directory: dist
@@ -383,15 +389,14 @@ jobs:
 
   provenance:
     name: SLSA Provenance
-    needs: [release, hash, upload-release]
+    needs: [release, hash]
     if: needs.release.outputs.new_release_published == 'true'
     permissions:
       actions: read
       id-token: write
-      contents: write
+      contents: read
     # zizmor: ignore[unpinned-uses] — SLSA generator requires tag reference, not SHA
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     with:
       base64-subjects: "${{ needs.hash.outputs.hashes }}"
-      upload-assets: true
-      upload-tag-name: "v${{ needs.release.outputs.new_release_version }}"
+      upload-assets: false
