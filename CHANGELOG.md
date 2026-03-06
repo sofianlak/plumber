@@ -1,3 +1,10 @@
+## [0.1.59](https://github.com/getplumber/plumber/compare/v0.1.58...v0.1.59) (2026-03-06)
+
+
+### ✨ Features
+
+* **ci:** Add openssf best practices ([c99cc15](https://github.com/getplumber/plumber/commit/c99cc1514ae1fa05e8ea2f5501210a798bba3434))
+
 ## [0.1.58](https://github.com/getplumber/plumber/compare/v0.1.57...v0.1.58) (2026-03-06)
 
 
