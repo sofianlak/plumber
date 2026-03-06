@@ -1,3 +1,10 @@
+## [0.1.58](https://github.com/getplumber/plumber/compare/v0.1.57...v0.1.58) (2026-03-06)
+
+
+### ✨ Features
+
+* **ci:** Add go vuln checks and ask dependabot to update go deps ([3e588c7](https://github.com/getplumber/plumber/commit/3e588c78004fbe63ee6a4f086a2f0112ddaa6f3f))
+
 ## [0.1.57](https://github.com/getplumber/plumber/compare/v0.1.56...v0.1.57) (2026-03-05)
 
 
