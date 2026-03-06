@@ -1,3 +1,5 @@
+## [0.1.60](https://github.com/getplumber/plumber/compare/v0.1.59...v0.1.60) (2026-03-06)
+
 ## [0.1.59](https://github.com/getplumber/plumber/compare/v0.1.58...v0.1.59) (2026-03-06)
 
 
