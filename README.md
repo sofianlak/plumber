@@ -14,6 +14,10 @@
 </p>
 
 <p align="center">
+  <a href="https://www.bestpractices.dev/projects/12096"><img src="https://www.bestpractices.dev/projects/12096/badge"></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/getplumber/plumber/actions"><img src="https://img.shields.io/github/actions/workflow/status/getplumber/plumber/release.yml?label=Build" alt="Build Status"></a>
   <a href="https://github.com/getplumber/plumber/releases"><img src="https://img.shields.io/github/v/release/getplumber/plumber" alt="Latest Release"></a>
   <img src="https://img.shields.io/github/go-mod/go-version/getplumber/plumber" alt="Go Version">
