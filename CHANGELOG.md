@@ -1,3 +1,15 @@
+## [0.1.61](https://github.com/getplumber/plumber/compare/v0.1.60...v0.1.61) (2026-03-10)
+
+
+### ✨ Features
+
+* **conf:** Add conf diff ([d48e5e1](https://github.com/getplumber/plumber/commit/d48e5e118d4a57fbd3ed260158a68c0f82bb1e17)), closes [#62](https://github.com/getplumber/plumber/issues/62)
+
+
+### 🐛 Bug Fixes
+
+* **control:** Add doc and fix edge cases: ([13359f7](https://github.com/getplumber/plumber/commit/13359f7f57c2964e3b3a73ca9243863f83de79a0))
+
 ## [0.1.60](https://github.com/getplumber/plumber/compare/v0.1.59...v0.1.60) (2026-03-06)
 
 ## [0.1.59](https://github.com/getplumber/plumber/compare/v0.1.58...v0.1.59) (2026-03-06)
