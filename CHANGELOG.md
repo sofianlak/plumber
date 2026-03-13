@@ -1,3 +1,15 @@
+## [0.1.64](https://github.com/getplumber/plumber/compare/v0.1.63...v0.1.64) (2026-03-13)
+
+
+### ✨ Features
+
+* **controls:** Add securityJobsMustNotBeWeakened control: ([6dbad42](https://github.com/getplumber/plumber/commit/6dbad42f3ebf4fa49895bb07840a976ced4f4dc3))
+
+
+### 🐛 Bug Fixes
+
+* **dockerfile:** Update builder image to remove vulns ([7d620c9](https://github.com/getplumber/plumber/commit/7d620c9c04a63310dadc1d55f179b4b035dc5428))
+
 ## [0.1.63](https://github.com/getplumber/plumber/compare/v0.1.62...v0.1.63) (2026-03-11)
 
 ## [0.1.62](https://github.com/getplumber/plumber/compare/v0.1.61...v0.1.62) (2026-03-11)
