@@ -266,7 +266,7 @@ include:
 | `badge` | `false` | Create/update a Plumber compliance badge on the project (requires `api` scope; only runs on default branch) |
 | `controls` | — | Run only listed controls (comma-separated). Cannot be used with `skip_controls` |
 | `skip_controls` | — | Skip listed controls (comma-separated). Cannot be used with `controls` |
-| `fail_warnings` | `false` | Treat configuration warnings (unknown keys) as errors (exit 1) |
+| `fail_warnings` | `false` | Treat configuration warnings (unknown keys) as errors (exit 2) |
 
 </details>
 
@@ -286,7 +286,7 @@ This creates `.plumber.yaml` with sensible [defaults](./.plumber.yaml). Customiz
 
 ### Available Controls
 
-Plumber includes 10 compliance controls. Each can be enabled/disabled and customized in [.plumber.yaml](.plumber.yaml):
+Plumber includes 11 compliance controls. Each can be enabled/disabled and customized in [.plumber.yaml](.plumber.yaml):
 
 <details>
 <summary><b>1. Container images must not use forbidden tags</b></summary>
@@ -907,7 +907,7 @@ plumber analyze [flags]
 | `--badge` | No | `false` | Create/update a Plumber compliance badge on the project (requires `api` scope; only runs on default branch) |
 | `--controls` | No | — | Run only listed controls (comma-separated). Cannot be used with `--skip-controls` |
 | `--skip-controls` | No | — | Skip listed controls (comma-separated). Cannot be used with `--controls` |
-| `--fail-warnings` | No | `false` | Treat configuration warnings (unknown keys) as errors (exit 1) |
+| `--fail-warnings` | No | `false` | Treat configuration warnings (unknown keys) as errors (exit 2) |
 | `--verbose`, `-v` | No | `false` | Enable verbose/debug output for troubleshooting |
 
 > \* Auto-detected from git remote (`origin`) if not specified. Supports both SSH and HTTPS remote URLs.
@@ -1006,9 +1006,9 @@ plumber config validate [flags]
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--config`, `-c` | `.plumber.yaml` | Path to configuration file |
-| `--fail-warnings` | `false` | Treat configuration warnings as errors (exit 1) |
+| `--fail-warnings` | `false` | Treat configuration warnings as errors (exit 2) |
 
-Warnings are printed to stderr so they don't interfere with scripted output. Use `--fail-warnings` to exit with code 1 when warnings are found (useful in CI).
+Warnings are printed to stderr so they don't interfere with scripted output. Use `--fail-warnings` to exit with code 2 when warnings are found (useful in CI).
 
 **Examples:**
 

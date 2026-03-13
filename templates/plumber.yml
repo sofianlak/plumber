@@ -77,7 +77,7 @@ spec:
       description: "Skip listed controls (comma-separated control names). Cannot be used with controls."
       default: ""
     fail_warnings:
-      description: "Treat configuration warnings (unknown keys) as errors (exit 1)"
+      description: "Treat configuration warnings (unknown keys) as errors (exit 2)"
       default: false
       type: boolean
 

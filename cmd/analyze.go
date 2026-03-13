@@ -65,7 +65,7 @@ Optional flags:
   --badge            Create/update a Plumber compliance badge on the project (requires api scope; only runs on default branch)
   --controls         Run only listed controls (comma-separated)
   --skip-controls    Skip listed controls (comma-separated)
-  --fail-warnings    Treat configuration warnings as errors (exit 1)
+  --fail-warnings    Treat configuration warnings as errors (exit 2)
 
 Exit codes:
   0  Analysis passed (compliance >= threshold)
@@ -110,7 +110,7 @@ func init() {
 	analyzeCmd.Flags().BoolVar(&badge, "badge", false, "Create/update a Plumber compliance badge on the project (requires api scope; only runs on default branch)")
 	analyzeCmd.Flags().StringVar(&controlsFilter, "controls", "", "Run only listed controls (comma-separated)")
 	analyzeCmd.Flags().StringVar(&skipControls, "skip-controls", "", "Skip listed controls (comma-separated)")
-	analyzeCmd.Flags().BoolVar(&failWarnings, "fail-warnings", false, "Treat configuration warnings as errors (exit 1)")
+	analyzeCmd.Flags().BoolVar(&failWarnings, "fail-warnings", false, "Treat configuration warnings as errors (exit 2)")
 }
 
 func runAnalyze(cmd *cobra.Command, args []string) error {

@@ -141,7 +141,7 @@ func init() {
 
 	// config validate flags
 	configValidateCmd.Flags().StringVarP(&configValidateFile, "config", "c", ".plumber.yaml", "Path to configuration file")
-	configValidateCmd.Flags().BoolVar(&failWarnings, "fail-warnings", false, "Treat configuration warnings as errors (exit 1)")
+	configValidateCmd.Flags().BoolVar(&failWarnings, "fail-warnings", false, "Treat configuration warnings as errors (exit 2)")
 
 	// config view flags
 	configViewCmd.Flags().StringVarP(&configViewFile, "config", "c", ".plumber.yaml", "Path to configuration file")
