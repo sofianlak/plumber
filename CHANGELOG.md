@@ -1,3 +1,10 @@
+## [0.1.65](https://github.com/getplumber/plumber/compare/v0.1.64...v0.1.65) (2026-03-13)
+
+
+### ✨ Features
+
+* **cmd:** differentiate exit codes for compliance vs runtime errors (closes [#61](https://github.com/getplumber/plumber/issues/61)) ([b07f2f8](https://github.com/getplumber/plumber/commit/b07f2f8d58e40e4dabdc1dd48beec0019854c2c7))
+
 ## [0.1.64](https://github.com/getplumber/plumber/compare/v0.1.63...v0.1.64) (2026-03-13)
 
 
