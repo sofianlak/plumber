@@ -1,3 +1,10 @@
+## [0.1.66](https://github.com/getplumber/plumber/compare/v0.1.65...v0.1.66) (2026-03-13)
+
+
+### 🐛 Bug Fixes
+
+* **analysis:** Fix output that --failing-warnings exits with code 2 ([2a23489](https://github.com/getplumber/plumber/commit/2a2348924758460d6a7c45f02afc83da27fbe27a))
+
 ## [0.1.65](https://github.com/getplumber/plumber/compare/v0.1.64...v0.1.65) (2026-03-13)
 
 
